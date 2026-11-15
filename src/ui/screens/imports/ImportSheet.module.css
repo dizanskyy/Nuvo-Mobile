@@ -1,0 +1,69 @@
+.line {
+  margin: 0;
+  color: var(--n-ink-2);
+  font: var(--n-type-body);
+  text-wrap: pretty;
+}
+
+/* two equal halves, so the thumb slides by its own width */
+.segments {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border-radius: var(--n-r-pill);
+  background: var(--n-pop-hover);
+}
+
+.thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: var(--n-r-pill);
+  background: var(--n-lens);
+  box-shadow: var(--n-lens-shadow);
+  transition: transform 220ms var(--n-ease-out);
+}
+
+.segments[data-chosen="liked"] .thumb {
+  transform: translateX(100%);
+}
+
+.segment {
+  position: relative;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--n-r-pill);
+  background: transparent;
+  color: var(--n-ink-2);
+  font: var(--n-type-label);
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition:
+    color 150ms var(--n-ease-out),
+    background-color 150ms var(--n-ease-out);
+}
+
+.segment:hover,
+.segment[aria-pressed="true"] {
+  color: var(--n-ink);
+}
+
+.segment:focus-visible {
+  background: var(--n-focus-fill);
+}
+
+.file {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb,
+  .segment {
+    transition: none;
+  }
+}

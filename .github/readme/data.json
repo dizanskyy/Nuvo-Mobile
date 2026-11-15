@@ -1,0 +1,911 @@
+{
+  "repo": "https://github.com/Ziuziuk-Denys/Nuvo",
+  "site": "https://nuvo.quest",
+  "version": "0.3.0",
+  "tagline": "The local-first music player.",
+  "social": "Free and open source, for Linux, Windows and macOS. No account.",
+  "pills": {
+    "download": {
+      "label": "Download",
+      "icon": "download",
+      "url": "https://github.com/Ziuziuk-Denys/Nuvo/releases/latest",
+      "alt": "Download Nuvo"
+    },
+    "support": {
+      "label": "Support the author",
+      "icon": "like",
+      "url": "https://nuvo.quest/donate",
+      "alt": "Support the author"
+    },
+    "channel": {
+      "label": "Join the channel",
+      "brand": "telegram",
+      "url": "https://t.me/getnuvo",
+      "alt": "Join the Nuvo channel on Telegram"
+    }
+  },
+  "new": [
+    "A new interface: a top bar with search in it, the search palette (Ctrl K) and every screen redrawn with our own icons",
+    "Nine themes, Matcha and Blossom among them, with an illustrated app icon for eight",
+    "Wallpapers in both themes: a photo, a GIF or a video",
+    "SoundCloud search, with YouTube and SoundCloud songs ranked in one list",
+    "Imports from Soundiiz, TuneMyMusic, Google Takeout, XSPF and TXT files, and public Yandex Music playlists, albums and tracks by link",
+    "Lyrics made on your computer: every word timed, plain lyrics timed, and lyrics written for songs that have none",
+    "SOCKS5 proxies with a login, and a check of each service through the proxy",
+    "yt-dlp, Deno and ffmpeg download by themselves on every platform",
+    "Last.fm shows the song as now playing, and the Discord status is on by default",
+    "Fixes for the Notch on KDE Plasma and per-track loudness normalization, and SQLCipher 4.20"
+  ],
+  "why": [
+    {
+      "claim": "Free, all of it.",
+      "why": "Every feature, no plan to pick. Nuvo Plus costs nothing, since it does not exist. Liner Plus costs $4 a month, and Mpthree Plus costs 149 ₽ per 30 days and holds Mpthree's equalizer, effects, crossfade, shortcuts and song recognition. Riff is free too.",
+      "sources": [
+        [
+          "Liner pricing",
+          "https://tryliner.fun/"
+        ],
+        [
+          "Mpthree plans",
+          "https://mpthree.fun/tariffs"
+        ],
+        [
+          "Riff FAQ",
+          "https://github.com/rootscripts/riff/blob/ac68b13/README.md#faq"
+        ]
+      ]
+    },
+    {
+      "claim": "The source is right here.",
+      "why": "AGPL-3.0-or-later: read it, build it, fork it and share your fork. Liner's licence forbids public forks and any build that talks to a server other than Liner's. Mpthree publishes no source. Riff is open as well, under MIT.",
+      "sources": [
+        [
+          "Liner licence",
+          "https://github.com/tryliner/desktop/blob/197179b/LICENSE"
+        ],
+        [
+          "Mpthree terms, 2.1",
+          "https://mpthree.fun/legal"
+        ],
+        [
+          "Riff licence",
+          "https://github.com/rootscripts/riff/blob/ac68b13/LICENSE"
+        ]
+      ]
+    },
+    {
+      "claim": "No account, no Nuvo server.",
+      "why": "Your library lives in one file on your machine, so you have no password to forget. Liner keeps your library, playlists and plays on its server under your account, and Mpthree needs an account for Plus. Riff skips the account too.",
+      "sources": [
+        [
+          "Liner privacy",
+          "https://github.com/tryliner/desktop/blob/197179b/docs/PRIVACY.md"
+        ],
+        [
+          "Mpthree terms, 7.3",
+          "https://mpthree.fun/legal"
+        ],
+        [
+          "Riff FAQ",
+          "https://github.com/rootscripts/riff/blob/ac68b13/README.md#faq"
+        ]
+      ]
+    },
+    {
+      "claim": "Encrypted, with a way back in.",
+      "why": "Nuvo encrypts your library and its audio cache. If the system keyring goes missing, your 24-word recovery phrase opens it. We found no encrypted library or recovery phrase on the official pages of Liner, Riff or Mpthree.",
+      "sources": [
+        [
+          "Liner privacy",
+          "https://github.com/tryliner/desktop/blob/197179b/docs/PRIVACY.md"
+        ],
+        [
+          "Liner storage",
+          "https://github.com/tryliner/desktop/blob/197179b/docs/STORAGE.md"
+        ],
+        [
+          "Riff README",
+          "https://github.com/rootscripts/riff/blob/ac68b13/README.md"
+        ],
+        [
+          "Mpthree terms",
+          "https://mpthree.fun/legal"
+        ]
+      ]
+    },
+    {
+      "claim": "The whole sound kit, free.",
+      "why": "A ten-band equalizer with twelve presets, speed, pitch and reverb, crossfade, gapless playback and loudness normalization. Mpthree sells its equalizer, speed, reverb and crossfade as Plus. Riff gives you an equalizer, speed, pitch and reverb at no cost.",
+      "sources": [
+        [
+          "Mpthree terms, 2.3",
+          "https://mpthree.fun/legal"
+        ],
+        [
+          "Riff README",
+          "https://github.com/rootscripts/riff/blob/ac68b13/README.md"
+        ]
+      ]
+    },
+    {
+      "claim": "Name that song.",
+      "why": "Nuvo recognizes a song from a file, a link, your microphone or what your computer plays (the last two on Linux), and keeps a history. Mpthree puts recognition in Plus. Liner and Riff do not document it.",
+      "sources": [
+        [
+          "Mpthree terms, 2.3",
+          "https://mpthree.fun/legal"
+        ],
+        [
+          "Liner site",
+          "https://tryliner.fun/"
+        ],
+        [
+          "Riff site",
+          "https://riff.hs.vc/"
+        ]
+      ]
+    },
+    {
+      "claim": "Lyrics for songs that have none.",
+      "why": "Nuvo listens to the track and times every word on your computer. Liner, Riff and Mpthree describe online lyrics, LRC files and manual offsets.",
+      "sources": [
+        [
+          "Nuvo 0.3.0",
+          "https://github.com/Ziuziuk-Denys/Nuvo/releases/tag/v0.3.0"
+        ],
+        [
+          "Liner site",
+          "https://tryliner.fun/"
+        ],
+        [
+          "Riff README",
+          "https://github.com/rootscripts/riff/blob/ac68b13/README.md"
+        ],
+        [
+          "Mpthree site",
+          "https://mpthree.fun/"
+        ]
+      ]
+    },
+    {
+      "claim": "Bring your library as a file.",
+      "why": "Exports from Soundiiz, TuneMyMusic and Google Takeout, Spotify CSV, XSPF and plain text, plus links from Spotify, Apple Music, Deezer, SoundCloud and Yandex Music. Riff takes links, Yandex Music among them, and its own JSON file. Liner takes links.",
+      "sources": [
+        [
+          "Nuvo 0.3.0",
+          "https://github.com/Ziuziuk-Denys/Nuvo/releases/tag/v0.3.0"
+        ],
+        [
+          "Riff site",
+          "https://riff.hs.vc/"
+        ],
+        [
+          "Liner privacy",
+          "https://github.com/tryliner/desktop/blob/197179b/docs/PRIVACY.md"
+        ]
+      ]
+    },
+    {
+      "claim": "Statistics that stay yours.",
+      "why": "A story of your listening, charts, top lists and drill-downs, which you can export, delete or pause. Liner sends play events to its server for history and recommendations.",
+      "sources": [
+        [
+          "Liner privacy",
+          "https://github.com/tryliner/desktop/blob/197179b/docs/PRIVACY.md"
+        ]
+      ]
+    },
+    {
+      "claim": "A proxy built in.",
+      "why": "SOCKS5 with a login and a connection check for each service, so you see which one your network blocks. Liner's FAQ points you to a VPN.",
+      "sources": [
+        [
+          "Liner FAQ",
+          "https://github.com/tryliner/desktop/blob/197179b/docs/FAQ.md"
+        ]
+      ]
+    },
+    {
+      "claim": "arm64 for Linux and Windows.",
+      "why": "Liner 0.2.11, Riff 0.7.5 and Mpthree 1.1.0 list no arm64 build for either system. Pear Desktop does ship them.",
+      "sources": [
+        [
+          "Liner 0.2.11",
+          "https://github.com/tryliner/desktop/releases/tag/v0.2.11"
+        ],
+        [
+          "Riff 0.7.5",
+          "https://github.com/rootscripts/riff/releases/tag/v0.7.5"
+        ],
+        [
+          "Mpthree downloads",
+          "https://mpthree.fun/"
+        ],
+        [
+          "Pear Desktop 3.12.0",
+          "https://github.com/pear-devs/pear-desktop/releases/tag/v3.12.0"
+        ]
+      ]
+    },
+    {
+      "claim": "Small tools.",
+      "why": "Moments to mark a spot and jump back, an A-B loop, trims for a song's start and end, romanized lyrics, a dislike button on every song and a reason beside each recommendation."
+    }
+  ],
+  "features": [
+    {
+      "name": "Search and play",
+      "widget": "search",
+      "title": "Two sources, one list.",
+      "sub": "YouTube and SoundCloud are ranked together. Paste a link and it plays.",
+      "alt": "The search palette with a top result and songs from both sources.",
+      "bullets": [
+        "One field for songs, artists and links, opened with Ctrl K",
+        "YouTube and SoundCloud results in one ranked list",
+        "Paste links from Apple Music, Deezer, Yandex Music, Shazam or TikTok, and share songs and playlists as compact links",
+        "Recognize a song from a video link, a file, the microphone or the sound your computer plays. The last two work on Linux"
+      ]
+    },
+    {
+      "name": "Library and mixes",
+      "widget": "mixes",
+      "title": "Mixes made on your computer.",
+      "sub": "Ranked from what you play and like. No server sees your taste.",
+      "alt": "Three mixes on Home: For you, Something new and Recently liked.",
+      "bullets": [
+        "Likes, saved albums and artists, playlists with custom covers, a duplicate finder",
+        "Playlists you can merge, sort six ways, keep offline, restore after a delete and pin",
+        "Mixes and radio from your plays and likes, \"Not interested\" with undo, a dislike button on every song",
+        "Statistics with a listening history that you can pause, export or delete",
+        "Tags, covers and `.lrc` files read from your folders"
+      ]
+    },
+    {
+      "name": "Sound",
+      "widget": "sound",
+      "title": "Ten bands over a live spectrum.",
+      "sub": "Twelve presets, auto gain, and a curve remembered for a track or an artist.",
+      "alt": "The equalizer panel with ten bands over a spectrum and twelve presets.",
+      "bullets": [
+        "Gapless playback, crossfade of 1 to 12 seconds, queue, shuffle, repeat",
+        "Loudness normalization, speed and pitch with presets, reverb",
+        "Sleep timer, A-B loop, moments to jump back to, trims for a song's start and end",
+        "Media keys, and MPRIS on Linux"
+      ]
+    },
+    {
+      "name": "Lyrics",
+      "widget": "lyrics",
+      "title": "Lyrics for songs that have none.",
+      "sub": "Nuvo listens to the song and times every word, on this computer.",
+      "alt": "Lyric lines that Nuvo wrote for a song, marked as written by Nuvo.",
+      "bullets": [
+        "Synced lyrics and karaoke by line, word, fill or step",
+        "Every word timed on your computer, and lyrics written for songs that have none. The model downloads once, 82 MB",
+        "Paste LRC or plain text and tap to sync, with a timing offset per track",
+        "Romanized lyrics for Korean, Chinese and Japanese kana, and translation through a local model"
+      ]
+    },
+    {
+      "name": "Imports",
+      "widget": "import",
+      "title": "Bring your playlists.",
+      "sub": "Paste a link or drop an export file. A report lists every match and every miss.",
+      "alt": "An import preview of a 100-song playlist with its first matches.",
+      "bullets": [
+        "Playlist links from YouTube, SoundCloud, Apple Music, Deezer, Spotify and Yandex Music",
+        "Files: Spotify, Soundiiz, TuneMyMusic and Google Takeout exports, M3U, XSPF, CSV, TXT and Nuvo playlists",
+        "Save streamed tracks as files, original or MP3, and export playlists and the whole library"
+      ]
+    },
+    {
+      "name": "Your look",
+      "widget": "background",
+      "title": "Nine themes and your own wallpaper.",
+      "sub": "A photo, a GIF or a video behind every screen, with the blur and fade you choose.",
+      "alt": "Background and motion settings with a photo wallpaper, blur and fade.",
+      "bullets": [
+        "Nine themes, a colour editor with contrast checks, theme files, system or custom fonts",
+        "Custom CSS with a strict checker and a safe mode",
+        "The Notch, a small player at the top of the screen, on Windows, macOS, KDE, Hyprland, Sway and X11. Off until you turn it on",
+        "A panel widget for the GNOME top bar, the Plasma panel and Waybar",
+        "Rebindable shortcuts, window zoom, a reduce-effects switch, English and Russian"
+      ]
+    },
+    {
+      "name": "Private by design",
+      "widget": "lock",
+      "title": "No account. No Nuvo server.",
+      "sub": "Your library is an encrypted database on your machine, and its key stays in your system keyring.",
+      "alt": "The unlock screen that asks for the 24-word recovery phrase.",
+      "bullets": [
+        "Encrypted database and audio cache, a 24-word recovery phrase, an optional passphrase for the key",
+        "A local API on a private socket with a token per launch",
+        "HTTP and SOCKS5 proxies with a login, and a connection check for each service",
+        "Last.fm scrobbling with your own API key, off until you turn it on",
+        "A Discord status with the song cover. On by default; turn it off in Settings, Integrations, Discord",
+        "The update check contacts github.com. On by default; turn it off in Settings, Application, About"
+      ]
+    }
+  ],
+  "platforms": [
+    {
+      "name": "Linux",
+      "brand": "linux",
+      "status": "Main platform",
+      "formats": "AppImage, .deb, .rpm",
+      "text": "AppImage, `.deb` or `.rpm`, for x64 and arm64. Nuvo keeps its key in a Secret Service keyring such as GNOME Keyring or KWallet. Without one, the key stays in a file that you can seal with a passphrase in Settings, Application, Storage. On a Chromebook, turn on Linux in the ChromeOS settings and install the `.deb`."
+    },
+    {
+      "name": "Windows",
+      "brand": "windows",
+      "status": "Supported",
+      "formats": "Installer, portable .zip",
+      "text": "The installer (`.exe`) or the portable `.zip`, for x64 and arm64."
+    },
+    {
+      "name": "macOS",
+      "brand": "apple",
+      "status": "Supported, testers wanted",
+      "formats": ".dmg",
+      "text": "The `.dmg` for Apple silicon or Intel. We are looking for testers: tell us what works and what breaks in [the chat](https://t.me/getnuvo_chat)."
+    }
+  ],
+  "roadmap": [
+    {
+      "title": "Planned",
+      "items": [
+        "search by a lyric line",
+        "a music map and a year recap",
+        "genre and mood mixes",
+        "signed Windows and macOS builds"
+      ]
+    },
+    {
+      "title": "Weighing",
+      "items": [
+        "device sync with no Nuvo account",
+        "self-hosted music servers",
+        "plugins, a phone remote and a command line",
+        "room correction",
+        "per-device output routing"
+      ]
+    },
+    {
+      "title": "Never",
+      "items": [
+        "a Nuvo account or server",
+        "hosting or selling music",
+        "telemetry"
+      ]
+    }
+  ],
+  "unsigned": "Builds are not signed with a paid certificate yet. A certificate costs money every year and Nuvo is free, so your system may warn you the first time:\n\n- **Windows:** in SmartScreen, choose **More info**, then **Run anyway**.\n- **macOS:** open Nuvo once. When macOS blocks it, go to **System Settings**, **Privacy & Security**, and press **Open Anyway**.\n- **Linux:** make the AppImage executable and run it.",
+  "matrix": {
+    "checked": "2026-11-14",
+    "apps": [
+      "Nuvo",
+      "Liner",
+      "Riff",
+      "Spotify",
+      "YouTube Music",
+      "Apple Music",
+      "Strawberry",
+      "Mpthree"
+    ],
+    "notes": [
+      "Unknown means we found no source we could cite. It does not mean the app lacks the feature, and it is never counted as a no.",
+      "Yes and Partly cells have a source in .github/readme/comparison-sources.json. No cells rest on a repository we read or a limit the product's own docs state.",
+      "Liner cells come from its README, docs and website at commit 197179b, and Riff cells from its README at ac68b13 and riff.hs.vc, all read on 2026-11-14. Older cells keep their 2026-11-07 sources. On 2026-11-14 we turned 14 Liner and Riff cells whose earlier source was never recorded into unknown.",
+      "Mpthree cells come from mpthree.fun, its tariffs and its terms (in Russian, updated 2026-11-07), read on 2026-11-14. Mpthree Plus costs 149 ₽ per 30 days; features that need Plus are marked Partly.",
+      "Spotify, YouTube Music and Apple Music cells come from their help pages, except three cells sourced from SlashGear. Several rows carry over from an earlier pass whose source was not recorded; they are marked in the sources file.",
+      "Nuvo cells describe the app on Linux, its main platform. The Windows and macOS builds are the same app, except that MPRIS, the panel widgets and recognition from the microphone or system sound are Linux only. Rows added on 2026-11-08 carry yes for Nuvo and unknown for the others: we did not look for them elsewhere.",
+      "The rows are the features of the Nuvo app, so they favour Nuvo by construction. A feature another app has and Nuvo lacks is not listed here."
+    ],
+    "sources": [
+      {
+        "name": "Riff",
+        "url": "https://github.com/rootscripts/riff"
+      },
+      {
+        "name": "Liner",
+        "url": "https://github.com/tryliner/desktop"
+      },
+      {
+        "name": "Strawberry",
+        "url": "https://github.com/strawberrymusicplayer/strawberry"
+      },
+      {
+        "name": "Mpthree",
+        "url": "https://mpthree.fun/"
+      },
+      {
+        "name": "Spotify help",
+        "url": "https://support.spotify.com/"
+      },
+      {
+        "name": "YouTube Music help",
+        "url": "https://support.google.com/youtubemusic"
+      },
+      {
+        "name": "Apple Music guide",
+        "url": "https://support.apple.com/guide/music-windows/"
+      }
+    ],
+    "groups": [
+      {
+        "name": "Playback and sound",
+        "rows": [
+          {
+            "label": "Now-playing bar with seek, volume and track info",
+            "cells": "yyyyuuyu"
+          },
+          {
+            "label": "Queue panel (play next, add to queue)",
+            "cells": "yyyyuyuu"
+          },
+          {
+            "label": "Shuffle and repeat (off, all, one)",
+            "cells": "yyyyuyuu"
+          },
+          {
+            "label": "Radio from a song or artist",
+            "cells": "yyyuupuu"
+          },
+          {
+            "label": "Autoplay similar songs",
+            "cells": "yyyuuuup"
+          },
+          {
+            "label": "Crossfade and gapless transitions",
+            "cells": "yupyuyup"
+          },
+          {
+            "label": "Loudness normalization and auto gain",
+            "cells": "yuyyuyyu"
+          },
+          {
+            "label": "Output device choice",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Best quality switch",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "10-band equalizer with 12 presets",
+            "cells": "ypppuuyp"
+          },
+          {
+            "label": "Speed, pitch and reverb presets (slowed, nightcore, daycore)",
+            "cells": "yyypuuup"
+          },
+          {
+            "label": "Sleep timer",
+            "cells": "yuypyuuu"
+          },
+          {
+            "label": "A-B loop (set start, set end, clear)",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Pause on device change",
+            "cells": "yyuuuuuu"
+          },
+          {
+            "label": "Click to play or queue, and what plays on launch",
+            "cells": "yyuuuuuu"
+          },
+          {
+            "label": "Offline mode",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Saved audio with a cache size limit",
+            "cells": "yyypppyu"
+          },
+          {
+            "label": "Keep this version / Not this one (fix a wrong match)",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Media keys and MPRIS",
+            "cells": "yppuuuyu"
+          },
+          {
+            "label": "Moments: mark a place in a song and jump back to it",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Trim a song's start and end",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Choose which source a song plays from",
+            "cells": "yuuuuuuu"
+          }
+        ]
+      },
+      {
+        "name": "Lyrics",
+        "rows": [
+          {
+            "label": "Synced lyrics pane",
+            "cells": "yyyyyyup"
+          },
+          {
+            "label": "Karaoke view",
+            "cells": "yyyuuyuu"
+          },
+          {
+            "label": "Lyrics timing offset",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Romanized lyrics",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Lyrics editor: paste and time your own lyrics",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Lyrics translation on your machine",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Lyrics version choice (plain, line, word)",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Karaoke highlight modes (line, word, fill, step)",
+            "cells": "yppuuuuu"
+          },
+          {
+            "label": "Lyrics timed on your machine for songs that have none",
+            "cells": "yuuuuuuu"
+          }
+        ]
+      },
+      {
+        "name": "Discovery",
+        "rows": [
+          {
+            "label": "Mixes on Home (for you, something new, artist mixes)",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Recently liked and most saved shelves",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Pin to Home",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Reasons shown for recommendations",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Not interested controls (exact song, any version, artist for a while or always)",
+            "cells": "yupppuuu"
+          },
+          {
+            "label": "Hidden music list with Show again",
+            "cells": "yuypuuuu"
+          },
+          {
+            "label": "Start with a few artists you like",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Playlist suggestions",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Recognize a song (microphone, this computer or a file) with history",
+            "cells": "yuuuuuup"
+          },
+          {
+            "label": "Statistics page: story, charts, top lists and drill-downs",
+            "cells": "yuuuuuup"
+          },
+          {
+            "label": "Export, delete and pause your statistics",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Dislike button on every song",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Listening history with filters",
+            "cells": "yuuuuuuu"
+          }
+        ]
+      },
+      {
+        "name": "Search, links and sharing",
+        "rows": [
+          {
+            "label": "Search for songs, albums, artists and playlists",
+            "cells": "yyyyuuuu"
+          },
+          {
+            "label": "Search history",
+            "cells": "yyuuuuuu"
+          },
+          {
+            "label": "Paste a link to play or import (YouTube Music, Apple Music, Deezer, SoundCloud)",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Song from a TikTok link or video, found by listening",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Share links and copy list",
+            "cells": "yyuyuyuu"
+          },
+          {
+            "label": "Command palette",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Search YouTube and SoundCloud together",
+            "cells": "ynpuuuuu"
+          }
+        ]
+      },
+      {
+        "name": "Library and files",
+        "rows": [
+          {
+            "label": "Library tabs: playlists, albums, artists, on this computer",
+            "cells": "yyyyuuup"
+          },
+          {
+            "label": "Grid and list view with filter",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Liked songs",
+            "cells": "yyyyyuuu"
+          },
+          {
+            "label": "Create and delete playlists",
+            "cells": "yyyuuyyu"
+          },
+          {
+            "label": "Change playlist cover",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Duplicate finder and tidy with undo",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Sort tracks by title or length",
+            "cells": "yyyyuyuu"
+          },
+          {
+            "label": "Select several songs for bulk actions",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Local music folders with watching and .lrc files",
+            "cells": "ypypppyp"
+          },
+          {
+            "label": "Import a playlist from a link",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Import SoundCloud likes",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Import a Spotify export file (CSV)",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Import report with match review",
+            "cells": "yyuuuuuu"
+          },
+          {
+            "label": "Export playlists as CSV, JSON or M3U8",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Export the library as CSV or JSON",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Save songs as files",
+            "cells": "ypyuuuuu"
+          },
+          {
+            "label": "Artist page",
+            "cells": "yypuuuuu"
+          },
+          {
+            "label": "Album page",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "YouTube account sign-in, playback and playlist sync",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Import a Spotify playlist or album from its link",
+            "cells": "yppuuuuu"
+          },
+          {
+            "label": "Keep a playlist offline",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Merge playlists and move songs between them, with undo",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Recently deleted playlists with Restore",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Save format: original or MP3",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Pin a playlist, album or artist to the sidebar",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Explicit mark on songs their source calls explicit",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Import files from Soundiiz, TuneMyMusic, Google Takeout, XSPF or plain text",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Import a Yandex Music playlist from its link",
+            "cells": "yuyuuuuu"
+          }
+        ]
+      },
+      {
+        "name": "Look and feel",
+        "rows": [
+          {
+            "label": "Theme presets (nine)",
+            "cells": "yyyuuuup"
+          },
+          {
+            "label": "Accent from the cover",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Cover glow",
+            "cells": "yppuuuuu"
+          },
+          {
+            "label": "Language choice (English, Russian)",
+            "cells": "yyyyuuyu"
+          },
+          {
+            "label": "Fonts and interface size",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Theme editor with colour roles",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Theme import and export",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Custom CSS",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Wallpaper with blur and dimming",
+            "cells": "ypyuuuuu"
+          },
+          {
+            "label": "Reset customization and safe mode",
+            "cells": "yppuuuuu"
+          },
+          {
+            "label": "The Notch (mini player with lyrics and pulse)",
+            "cells": "yppuupuu"
+          },
+          {
+            "label": "Keep running in the tray",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Rebindable shortcuts, in the app and global",
+            "cells": "yyyuuupp"
+          },
+          {
+            "label": "Guided first-run tour",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Reduce effects",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Window zoom from the keyboard",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Panel widget for GNOME, Plasma and Waybar",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Wallpaper: photo, GIF or video",
+            "cells": "yppuuuuu"
+          }
+        ]
+      },
+      {
+        "name": "Privacy and system",
+        "rows": [
+          {
+            "label": "Encrypted library with recovery phrase unlock",
+            "cells": "ynuuuuuu"
+          },
+          {
+            "label": "Passphrase protection when no system keyring exists",
+            "cells": "ynuuuuuu"
+          },
+          {
+            "label": "Proxy setting",
+            "cells": "yupuuuuu"
+          },
+          {
+            "label": "Connection check and report",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Helper tools download (yt-dlp, ffmpeg)",
+            "cells": "yuyuuuuu"
+          },
+          {
+            "label": "Automatic updates",
+            "cells": "yyyuuuuu"
+          },
+          {
+            "label": "Last.fm scrobbling",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Discord status switch",
+            "cells": "yypuuuuu"
+          },
+          {
+            "label": "What's new after an update",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "Report a problem with a filled GitHub issue",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "SOCKS5 proxy with login and a per-service check",
+            "cells": "yuuuuuuu"
+          },
+          {
+            "label": "arm64 builds for Linux and Windows",
+            "cells": "ynnuuupn"
+          }
+        ]
+      }
+    ],
+    "total": 109,
+    "summary": "Each bar counts the rows of the tables below. Unknown means we found no source we could cite, not that the app lacks the feature."
+  }
+}

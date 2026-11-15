@@ -1,0 +1,100 @@
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* rows pad 8 px; pulling them out by 8 puts the covers on the title's edge */
+.songs {
+  margin: -6px -8px 0;
+}
+
+.shelfTitle {
+  margin-bottom: 16px;
+}
+
+.shelf {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  padding-bottom: 24px;
+  overflow-x: auto;
+}
+
+.card {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+  width: 180px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--n-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card:focus-visible {
+  outline: none;
+}
+
+.card:focus-visible .art {
+  box-shadow: 0 0 0 3px var(--n-focus-halo);
+}
+
+.art {
+  display: block;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.art > span {
+  transition: filter 300ms;
+}
+
+.card:hover .art > span,
+.card:focus-visible .art > span {
+  filter: brightness(1.15);
+}
+
+.cardTitle,
+.cardSubtitle {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cardTitle {
+  font: 500 14px/normal var(--n-font);
+}
+
+.cardSubtitle {
+  color: var(--n-ink-2);
+  font: 400 13px/normal var(--n-font);
+}
+
+.initial {
+  color: color-mix(in srgb, var(--n-ink) 20%, transparent);
+  font: 700 56px/1 var(--n-font);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art > span {
+    transition: none;
+  }
+}
+
+.verified {
+  display: inline-flex;
+  flex: none;
+  color: var(--n-accent);
+}

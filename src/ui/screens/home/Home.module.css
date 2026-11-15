@@ -1,0 +1,23 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.textAction {
+  margin-inline-start: -16px;
+}
+
+.home > :empty {
+  display: none;
+}
+
+.mixes {
+  display: flex;
+  align-items: flex-end;
+  gap: 28px;
+  margin: 0 calc(-1 * var(--n-gutter, 12px)) 25px;
+  padding: 0 var(--n-gutter, 12px) 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}

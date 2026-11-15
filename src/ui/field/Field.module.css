@@ -1,0 +1,69 @@
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+  background: var(--n-deep);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: background-color 380ms ease-out;
+}
+
+.cover {
+  position: absolute;
+  inset: 0 0 50%;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.9) 45%, transparent 100%);
+}
+
+/* The blur fades the picture's own edges, so the picture overhangs the clip by three blur radii */
+.cover > img {
+  position: absolute;
+  inset: calc(-3 * var(--blur));
+  width: calc(100% + 6 * var(--blur));
+  max-width: none;
+  height: calc(100% + 6 * var(--blur));
+  object-fit: cover;
+  opacity: 0;
+  transform: translateZ(0);
+  transition: opacity 380ms ease-out;
+}
+
+[data-mode="dark"] .cover > img[data-shown] {
+  opacity: 0.6;
+}
+
+[data-mode="light"] .cover > img[data-shown] {
+  opacity: 0.45;
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--n-field) 72%, transparent);
+}
+
+.wallpaper {
+  position: absolute;
+  max-width: none;
+  user-select: none;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+  background: var(--n-deep);
+}
+
+.dim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}

@@ -1,0 +1,445 @@
+import { useEffect, useRef, useState, type CSSProperties, type JSX, type KeyboardEvent, type PointerEvent } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { Cover } from "../components/Cover";
+import { Menu } from "../components/Menu";
+import { MorphPlayIcon } from "../components/MorphPlayIcon";
+import { Icon } from "../icons/Icon";
+import type { IconName } from "../icons";
+import { isEscapeGuarded } from "../ports/escape";
+import { useTranslation } from "../ports/i18n";
+import { useIsTrackLiked, useLikeTrack, useUnlikeTrack } from "../ports/library";
+import { songMenuNotInterested } from "../recs/notInterested";
+import { lyricsCommands, lyricsErrorText, useLyrics, versionLabel } from "../ports/lyrics";
+import { canMinimizeWindow, closeWindow, minimizeWindow, toggleMaximizeWindow, useWindowState } from "../ports/navigation";
+import { isRadioContext, nextRepeatMode, playerEngine, toVolumeGain, toVolumeLevel, usePlayerStore } from "../ports/player";
+import { formatTime } from "../shell/island/Scrubber";
+import { Backdrop } from "./backdrop/Backdrop";
+import { layoutFor } from "./layout";
+import { LyricsPane } from "./LyricsPane";
+import { useRomanization } from "./romanization";
+import type { LyricsTrack } from "../ports/lyricsTools";
+import { HIGHLIGHT_MODES, setHighlightMode, useHighlightMode, type HighlightMode } from "./highlightMode";
+import { isRunning, timeWords, useWordTiming } from "../ports/wordTiming";
+import { AddLyrics, MadeMark, TimeWords } from "./MadeLyrics";
+import styles from "./Karaoke.module.css";
+
+const MODE_TEXT: Record<HighlightMode, { label: string; hint: string }> = {
+  line: { label: "ui.karaoke.highlight_line", hint: "ui.karaoke.highlight_line_hint" },
+  word: { label: "ui.karaoke.highlight_word", hint: "ui.karaoke.highlight_word_hint" },
+  fill: { label: "ui.karaoke.highlight_fill", hint: "ui.karaoke.highlight_fill_hint" },
+  step: { label: "ui.karaoke.highlight_step", hint: "ui.karaoke.highlight_step_hint" },
+};
+const SEEK_STEP_MS = 5_000;
+const VOLUME_STEP = 0.05;
+const DEFAULT_VOLUME_LEVEL = 0.7;
+const WIDE = layoutFor(1200);
+const NARROW = layoutFor(1100);
+// Column edges interpolate linearly between the measured 1100 px and 1200 px windows
+const along = (wide: number, narrow: number, width: number) => narrow + ((wide - narrow) * (width - 1100)) / 100;
+
+function useWindowWidth(): number {
+  const [width, setWidth] = useState(() => window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
+
+interface GlyphButtonProps {
+  icon: IconName;
+  label: string;
+  className?: string;
+  onClick(): void;
+  size?: 18 | 20 | 24;
+  on?: boolean;
+}
+
+function GlyphButton({ icon, label, className, onClick, size = 20, on }: GlyphButtonProps): JSX.Element {
+  return (
+    <button type="button" aria-label={label} aria-pressed={on} data-on={on ? "" : undefined} className={className} onClick={onClick} data-no-window-drag>
+      <Icon name={icon} size={size} />
+    </button>
+  );
+}
+
+interface BarProps {
+  label: string;
+  value: number;
+  valueNow: number;
+  valueMax: number;
+  valueText: string;
+  className: string;
+  onChange(fraction: number, final: boolean): void;
+  onStep(direction: 1 | -1): void;
+}
+
+function Bar({ label, value, valueNow, valueMax, valueText, className, onChange, onStep }: BarProps): JSX.Element {
+  const [drag, setDrag] = useState<number | null>(null);
+  const shown = Math.min(1, Math.max(0, drag ?? value));
+  const at = (event: PointerEvent<HTMLElement>) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    return box.width > 0 ? Math.min(1, Math.max(0, (event.clientX - box.left) / box.width)) : 0;
+  };
+  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    const direction = event.key === "ArrowRight" || event.key === "ArrowUp" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowDown" ? -1 : 0;
+    if (direction === 0) return;
+    event.preventDefault();
+    onStep(direction);
+  };
+  return (
+    <div
+      role="slider"
+      tabIndex={0}
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={valueMax}
+      aria-valuenow={valueNow}
+      aria-valuetext={valueText}
+      className={`${styles.bar} ${className}`}
+      style={{ "--fraction": shown } as CSSProperties}
+      data-no-window-drag
+      onPointerDown={(event) => {
+        if (event.button !== 0) return;
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+        const next = at(event);
+        setDrag(next);
+        onChange(next, false);
+      }}
+      onPointerMove={(event) => {
+        if (drag === null) return;
+        const next = at(event);
+        setDrag(next);
+        onChange(next, false);
+      }}
+      onPointerUp={(event) => {
+        if (drag === null) return;
+        setDrag(null);
+        onChange(at(event), true);
+      }}
+      onPointerCancel={() => setDrag(null)}
+      onKeyDown={onKeyDown}
+    >
+      <span className={styles.fill} />
+    </div>
+  );
+}
+
+function VersionButton(): JSX.Element | null {
+  const { t } = useTranslation();
+  const versions = useLyrics((state) => state.versions);
+  const active = useLyrics((state) => state.activeVersion);
+  const trackId = useLyrics((state) => state.trackId);
+  const timing = useWordTiming();
+  const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
+  const [open, setOpen] = useState(false);
+  if (versions.length < 2) return null;
+  const improve =
+    timing?.enabled &&
+    trackId &&
+    active === "whisper-base" &&
+    versions.find((version) => version.provider === active)?.made === "synced" &&
+    !isRunning(timing.job, trackId)
+      ? (["separator", { label: t("ui.karaoke.word_timing.improve"), onSelect: () => void timeWords(trackId, true) }] as const)
+      : [];
+  return (
+    <>
+      <button
+        ref={setAnchor}
+        type="button"
+        aria-label={t("ui.karaoke.version")}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className={styles.small}
+        onClick={() => setOpen(true)}
+        data-no-window-drag
+      >
+        <Icon name="lyrics" size={18} />
+      </button>
+      <Menu
+        open={open}
+        anchor={anchor}
+        onClose={() => setOpen(false)}
+        className={styles.versionMenu}
+        items={[
+          ...versions.map((version) => ({
+            label: versionLabel(version, t),
+            icon: version.provider === active ? ("check" as const) : undefined,
+            onSelect: () => lyricsCommands.chooseVersion(version.provider),
+          })),
+          ...improve,
+        ]}
+      />
+    </>
+  );
+}
+
+function OffsetPill({ mode }: { mode: HighlightMode }): JSX.Element {
+  const { t } = useTranslation();
+  const offsetMs = useLyrics((state) => state.offsetMs);
+  const { available, kanaOnly, on, toggle } = useRomanization();
+  const synced = useLyrics((state) => state.synced);
+  const wordTimed = useLyrics((state) => state.wordTimed);
+  const trackId = useLyrics((state) => state.trackId);
+  const busy = isRunning(useWordTiming()?.job, trackId);
+  return (
+    <div className={styles.sourceRow} data-busy={busy ? "" : undefined}>
+      <div className={styles.pill} data-no-window-drag>
+        <GlyphButton icon="remove" size={18} label={t("ui.karaoke.earlier")} className={styles.small} onClick={() => lyricsCommands.nudgeOffset(-100)} />
+        <button type="button" aria-label={t("ui.karaoke.offset")} className={styles.offset} onClick={() => lyricsCommands.clearOffset()}>
+          {`${(offsetMs / 1000).toFixed(1)}s`}
+        </button>
+        <GlyphButton icon="add" size={18} label={t("ui.karaoke.later")} className={styles.small} onClick={() => lyricsCommands.nudgeOffset(100)} />
+        <VersionButton />
+        {available ? (
+          <button
+            type="button"
+            aria-label={t(kanaOnly ? "ui.karaoke.romanize_kana" : "ui.karaoke.romanize")}
+            title={t(kanaOnly ? "ui.karaoke.romanize_kana" : "ui.karaoke.romanize")}
+            aria-pressed={on}
+            data-on={on ? "" : undefined}
+            className={styles.romaji}
+            onClick={toggle}
+          >
+            Aa
+          </button>
+        ) : null}
+        {wordTimed ? (
+          <div role="group" aria-label={t("ui.karaoke.highlight")} className={styles.modes}>
+            {HIGHLIGHT_MODES.map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={option === mode}
+                data-on={option === mode ? "" : undefined}
+                title={t(MODE_TEXT[option].hint)}
+                className={styles.words}
+                onClick={() => setHighlightMode(option)}
+              >
+                {t(MODE_TEXT[option].label)}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <TimeWords trackId={trackId} have={wordTimed ? "words" : synced ? "lines" : "plain"} />
+      </div>
+    </div>
+  );
+}
+
+function LyricsColumn({ track, mode }: { track: LyricsTrack | null; mode: HighlightMode }): JSX.Element | null {
+  const { t } = useTranslation();
+  const trackId = track?.id ?? null;
+  const status = useLyrics((state) => (state.trackId === trackId ? state.status : "loading"));
+  if (status === "ready") {
+    return (
+      <div className={styles.lines}>
+        <LyricsPane onSeek={(ms) => void playerEngine.seek(ms)} layout={WIDE.lyrics} mode={mode} />
+      </div>
+    );
+  }
+  if (status === "none" && track) return <AddLyrics track={track} />;
+  const text = status === "none" ? t("ui.karaoke.no_lyrics") : status === "instrumental" ? t("ui.karaoke.instrumental") : lyricsErrorText({ status }, t);
+  if (!text) return null;
+  return (
+    <div className={styles.quiet}>
+      <p>{text}</p>
+    </div>
+  );
+}
+
+function Timeline({ fallbackMs }: { fallbackMs: number }): JSX.Element {
+  const { t } = useTranslation();
+  const playerDurationMs = usePlayerStore((state) => state.durationMs);
+  const playerPositionMs = usePlayerStore((state) => state.positionMs);
+  const durationMs = playerDurationMs > 0 ? playerDurationMs : fallbackMs;
+  const positionMs = Math.min(playerPositionMs, durationMs);
+  return (
+    <>
+      <Bar
+        label={t("ui.karaoke.seek")}
+        className={styles.seek}
+        value={durationMs > 0 ? positionMs / durationMs : 0}
+        valueNow={Math.round(positionMs / 1000)}
+        valueMax={Math.round(durationMs / 1000)}
+        valueText={`${formatTime(positionMs)} / ${formatTime(durationMs)}`}
+        onChange={(fraction, final) => {
+          if (final && durationMs > 0) void playerEngine.seek(Math.round(fraction * durationMs));
+        }}
+        onStep={(direction) => {
+          if (durationMs > 0) void playerEngine.seek(Math.min(durationMs, Math.max(0, positionMs + direction * SEEK_STEP_MS)));
+        }}
+      />
+      <div className={styles.times}>
+        <span>{formatTime(positionMs)}</span>
+        <span>{formatTime(durationMs)}</span>
+      </div>
+    </>
+  );
+}
+
+export function Karaoke({ onClose }: { onClose(): void }): JSX.Element {
+  const { t } = useTranslation();
+  // everything but the position: the timeline re-renders on its own as the song plays
+  const player = usePlayerStore(
+    useShallow((state) => ({
+      currentTrack: state.currentTrack,
+      status: state.status,
+      volume: state.volume,
+      shuffle: state.shuffle,
+      repeat: state.repeat,
+      playbackContext: state.playbackContext,
+    })),
+  );
+  const track = player.currentTrack;
+  const width = useWindowWidth();
+  const liked = useIsTrackLiked(track?.id);
+  const like = useLikeTrack();
+  const unlike = useUnlikeTrack();
+  const { isFullScreen, isMaximized } = useWindowState();
+  const lyricsReady = useLyrics((state) => state.status === "ready" && state.trackId === (track?.id ?? null));
+  const wordTimed = useLyrics((state) => state.wordTimed);
+  const chosenMode = useHighlightMode();
+  const mode = wordTimed ? chosenMode : "line";
+  const restoreLevel = useRef(DEFAULT_VOLUME_LEVEL);
+
+  // the engine drops a repeat for the same track
+  useEffect(() => {
+    if (track) lyricsCommands.follow(track);
+  }, [track]);
+
+  useEffect(() => {
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      // the app's shortcut layer closes the view first and marks the key handled
+      const typing = event.target instanceof HTMLElement && event.target.closest("input, textarea, [contenteditable]");
+      if (event.defaultPrevented || typing || isEscapeGuarded()) return;
+      if (event.key === "Escape" || event.key === "f" || event.key === "F") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const playing = player.status === "playing" || player.status === "loading";
+  const level = toVolumeLevel(player.volume ?? 1);
+  const setLevel = (next: number) => {
+    const clamped = Math.min(1, Math.max(0, next));
+    if (clamped > 0) restoreLevel.current = clamped;
+    playerEngine.setVolume(toVolumeGain(clamped));
+  };
+
+  const vars = {
+    "--k-left": `${Math.max(24, along(WIDE.cover.x, NARROW.cover.x, width))}px`,
+    "--k-lyrics": `${along(WIDE.lyrics.x, NARROW.lyrics.x, width)}px`,
+    "--k-lines": `${WIDE.lyrics.width}px`,
+  } as CSSProperties;
+  const maximized = isMaximized || isFullScreen;
+
+  return (
+    <div className={styles.root} style={vars} data-theme="dark">
+      <Backdrop cover={track?.coverUrl ?? ""} open />
+
+      <header className={styles.top} data-window-drag>
+        <GlyphButton icon="chevron-down" label={t("ui.karaoke.close")} className={styles.close} onClick={onClose} />
+        {lyricsReady ? <OffsetPill mode={mode} /> : null}
+        <div className={styles.windowButtons} data-window-controls>
+          <GlyphButton
+            icon="window-minimize"
+            label={t("ui.window.minimize")}
+            className={styles.window}
+            onClick={() => canMinimizeWindow() && minimizeWindow()}
+          />
+          <GlyphButton
+            icon={maximized ? "window-restore" : "window-maximize"}
+            label={t(maximized ? "ui.window.restore" : "ui.window.maximize")}
+            className={styles.window}
+            onClick={toggleMaximizeWindow}
+          />
+          <GlyphButton icon="window-close" label={t("ui.window.close")} className={`${styles.window} ${styles.quit}`} onClick={closeWindow} />
+        </div>
+      </header>
+
+      <section className={styles.left}>
+        <Cover src={track?.coverUrl ?? ""} size={340} radius={12} />
+        <h1 className={styles.title}>{track?.title ?? ""}</h1>
+        <p className={styles.artist}>{track?.artists ?? ""}</p>
+        {track ? (
+          <GlyphButton
+            icon={liked ? "liked" : "like"}
+            label={t(liked ? "ui.karaoke.unlike" : "ui.karaoke.like")}
+            className={styles.like}
+            onClick={() => (liked ? unlike.mutate(track.id) : like.mutate(track))}
+          />
+        ) : null}
+        {track ? (
+          <GlyphButton
+            icon="dislike"
+            label={t("ui.recs.dislike")}
+            className={`${styles.like} ${styles.dislike}`}
+            onClick={() => songMenuNotInterested?.(track, "exact")}
+          />
+        ) : null}
+        <Timeline fallbackMs={track?.durationMs ?? 0} />
+        <div className={styles.transport}>
+          <GlyphButton
+            icon="shuffle"
+            size={24}
+            label={t(player.shuffle ? "ui.karaoke.shuffle_on" : "ui.karaoke.shuffle_off")}
+            className={`${styles.side} ${styles.mode}`}
+            on={player.shuffle}
+            onClick={() => playerEngine.setShuffle(!player.shuffle)}
+          />
+          <GlyphButton icon="previous" label={t("ui.karaoke.previous")} className={styles.side} onClick={() => void playerEngine.skipPrevious()} />
+          <button
+            type="button"
+            className={styles.play}
+            aria-label={t(playing ? "ui.karaoke.pause" : "ui.karaoke.play")}
+            onClick={() => void playerEngine.togglePlayPause()}
+          >
+            <MorphPlayIcon playing={playing} size={22} />
+          </button>
+          <GlyphButton icon="next" label={t("ui.karaoke.next")} className={styles.side} onClick={() => void playerEngine.skipNext()} />
+          <GlyphButton
+            icon={player.repeat === "one" ? "repeat-one" : "repeat"}
+            size={24}
+            label={t(`ui.karaoke.repeat_${player.repeat}`)}
+            className={`${styles.side} ${styles.mode}`}
+            on={player.repeat !== "off"}
+            onClick={() => playerEngine.setRepeat(nextRepeatMode(player.repeat, isRadioContext(player.playbackContext)))}
+          />
+        </div>
+        <div className={styles.volume}>
+          <button
+            type="button"
+            aria-label={t(level > 0 ? "ui.karaoke.mute" : "ui.karaoke.unmute")}
+            className={styles.mute}
+            data-no-window-drag
+            onClick={() => {
+              if (level === 0) return setLevel(restoreLevel.current);
+              restoreLevel.current = level;
+              playerEngine.setVolume(toVolumeGain(0));
+            }}
+          >
+            <Icon name={level === 0 ? "volume-mute" : level < 0.5 ? "volume-low" : "volume-high"} size={20} />
+          </button>
+          <Bar
+            label={t("ui.karaoke.volume")}
+            className={styles.level}
+            value={level}
+            valueNow={Math.round(level * 100)}
+            valueMax={100}
+            valueText={`${Math.round(level * 100)}%`}
+            onChange={(fraction) => setLevel(fraction)}
+            onStep={(direction) => setLevel(level + direction * VOLUME_STEP)}
+          />
+        </div>
+      </section>
+
+      <LyricsColumn track={track} mode={mode} />
+      {lyricsReady && track ? <MadeMark track={track} /> : null}
+    </div>
+  );
+}

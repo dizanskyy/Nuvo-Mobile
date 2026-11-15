@@ -1,0 +1,108 @@
+import type { Cutout } from "../contracts";
+
+export type IslandMode = "idle" | "live" | "hover" | "expanded";
+
+export interface IslandSize {
+  width: number;
+  height: number;
+  radius: number;
+}
+
+export const ISLAND_SIZES: Record<IslandMode, IslandSize> = {
+  idle: { width: 200, height: 32, radius: 14 },
+  live: { width: 272, height: 34, radius: 14 },
+  hover: { width: 288, height: 44, radius: 16 },
+  expanded: { width: 440, height: 184, radius: 32 },
+};
+
+export const WING = 14;
+// The expanded island plus the largest spring overshoot (geometry.test.ts checks it)
+export const NOTCH_WINDOW = { width: 496, height: 200 };
+
+// Room beside the camera for the cover on the left and the bars on the right
+const CUTOUT_SIDE = 44;
+
+export function islandSizes(cutout: Cutout | null): Record<IslandMode, IslandSize> {
+  if (!cutout) return ISLAND_SIZES;
+  const { idle, live, hover, expanded } = ISLAND_SIZES;
+  const beside = cutout.width + CUTOUT_SIDE * 2;
+  return {
+    idle: { ...idle, width: Math.max(idle.width, cutout.width), height: Math.max(idle.height, cutout.height) },
+    live: { ...live, width: Math.max(live.width, beside), height: Math.max(live.height, cutout.height) },
+    hover: { ...hover, width: Math.max(hover.width, beside + 16), height: Math.max(hover.height, cutout.height + 8) },
+    expanded: { ...expanded, height: expanded.height + cutout.height },
+  };
+}
+
+export function notchWindow(cutout: Cutout | null): { width: number; height: number } {
+  return cutout ? { width: NOTCH_WINDOW.width, height: NOTCH_WINDOW.height + cutout.height + 4 } : NOTCH_WINDOW;
+}
+export const HIT_SLOP = 6;
+const SHAPE_SLACK = 2;
+
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export function islandRect(size: IslandSize, windowWidth = NOTCH_WINDOW.width): Rect {
+  const width = Math.min(windowWidth, size.width + WING * 2 + SHAPE_SLACK * 2);
+  return {
+    x: Math.round((windowWidth - width) / 2),
+    y: 0,
+    width,
+    height: size.height + SHAPE_SLACK,
+  };
+}
+
+// Linux: setShape also clips painting, so leave room for the spring overshoot (peak minus 1)
+export function grownRect(from: IslandSize, to: IslandSize, overshoot: number, window = NOTCH_WINDOW): Rect {
+  const exact = islandRect(to, window.width);
+  const side = Math.ceil((Math.max(0, to.width - from.width) * overshoot) / 2);
+  const below = Math.ceil(Math.max(0, to.height - from.height) * overshoot);
+  const width = Math.min(window.width, exact.width + side * 2);
+  return {
+    x: Math.round((window.width - width) / 2),
+    y: 0,
+    width,
+    height: Math.min(window.height, exact.height + below),
+  };
+}
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+// Captures inside the rect; once capturing, lets go only past the slop or when no button is held
+export function capturesPointer(point: Point | null, rect: Rect, capturing: boolean, buttons = 0): boolean {
+  if (!point) return capturing && buttons !== 0;
+  if (capturing && buttons !== 0) return true;
+  const slop = capturing ? HIT_SLOP : 0;
+  return point.x >= rect.x - slop && point.x < rect.x + rect.width + slop && point.y >= rect.y - slop && point.y < rect.y + rect.height + slop;
+}
+
+const KAPPA = 0.5523;
+
+export function islandPath({ width, height, radius }: IslandSize, wing = WING): string {
+  const total = width + wing * 2;
+  const r = Math.min(radius, Math.max(0, height - wing), width / 2);
+  const left = wing;
+  const right = wing + width;
+  const k = r * KAPPA;
+  const n = (v: number) => Math.round(v * 100) / 100;
+  return [
+    `M0 0`,
+    `H${n(total)}`,
+    `Q${n(right)} 0 ${n(right)} ${n(wing)}`,
+    `V${n(height - r)}`,
+    `C${n(right)} ${n(height - r + k)} ${n(right - r + k)} ${n(height)} ${n(right - r)} ${n(height)}`,
+    `H${n(left + r)}`,
+    `C${n(left + r - k)} ${n(height)} ${n(left)} ${n(height - r + k)} ${n(left)} ${n(height - r)}`,
+    `V${n(wing)}`,
+    `Q${n(left)} 0 0 0`,
+    `Z`,
+  ].join(" ");
+}

@@ -1,0 +1,806 @@
+.note {
+  margin: 0;
+  padding: 12px 0;
+  color: var(--n-ink-3);
+  font: 400 12.5px/1.45 var(--n-font);
+  text-wrap: pretty;
+}
+
+.status {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 11px 0 12px;
+  color: var(--n-ink-3);
+  font: 400 12.5px/1.45 var(--n-font);
+  text-wrap: pretty;
+}
+
+.status::before {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 3px;
+  background: #34c759;
+  content: "";
+  transform: translateY(-1px);
+}
+
+.status[data-warn]::before {
+  background: #ff9f0a;
+}
+
+.services {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+}
+
+.service {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 16px;
+  align-items: baseline;
+  font: 400 13px/1.45 var(--n-font);
+  color: var(--n-ink);
+}
+
+.serviceStatus {
+  color: var(--n-ink-3);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.service:not([data-state="works"]) .serviceStatus {
+  color: var(--n-ink);
+  font-weight: 500;
+}
+
+.serviceAdvice {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  color: var(--n-ink-3);
+  font: 400 12.5px/1.45 var(--n-font);
+}
+
+.button {
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--n-ink) 8%, transparent);
+  color: var(--n-ink);
+  cursor: pointer;
+  font: 500 13px var(--n-font);
+  transition:
+    background-color 0.15s ease-out,
+    transform 0.15s ease-out;
+}
+
+.button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--n-ink) 16%, transparent);
+}
+
+.button:active:not(:disabled),
+.quietButton:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 8px;
+}
+
+.preset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 6px 8px;
+  border: 0;
+  border-radius: 16px;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease-out,
+    box-shadow 0.15s ease-out;
+}
+
+.preset:hover {
+  background: var(--n-tray-item-hover);
+}
+
+.preset[aria-pressed="true"] {
+  background: var(--n-lens);
+  box-shadow: var(--n-lens-shadow);
+}
+
+.preset:focus-visible {
+  background: var(--n-focus-fill);
+}
+
+.presetIcon {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--n-ink) 7%, transparent),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease-out;
+}
+
+.preset:active .presetIcon {
+  transform: scale(0.96);
+}
+
+.presetText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.presetName {
+  color: var(--n-ink-2);
+  font: 400 13px/1.25 var(--n-font);
+}
+
+.preset[aria-pressed="true"] .presetName {
+  color: var(--n-ink);
+  font-weight: 500;
+}
+
+.presetMode {
+  color: var(--n-ink-3);
+  font: 400 11px/1.25 var(--n-font);
+}
+
+.modes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--n-ink) 6%, transparent);
+}
+
+:global(:root[data-theme="dark"]) .modes {
+  border-top-color: color-mix(in srgb, var(--n-ink) 8%, transparent);
+}
+
+.modeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.mode {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mode:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  user-select: none;
+}
+
+.modeFrame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 76px;
+  border: 1px solid color-mix(in srgb, var(--n-ink) 10%, transparent);
+  border-radius: 8px;
+  transition: border-color 0.15s;
+}
+
+.mode:not(:disabled):hover .modeFrame {
+  border-color: var(--n-ink-3);
+}
+
+.mode[aria-pressed="true"] .modeFrame {
+  border-color: var(--n-ink);
+  box-shadow: 0 0 0 1px var(--n-ink);
+}
+
+.modeCheck {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--n-ink);
+  color: var(--n-field);
+}
+
+.modeCheck svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 3;
+}
+
+.modeLabel {
+  color: var(--n-ink-2);
+  font: 400 12.5px/1 var(--n-font);
+}
+
+.mode[aria-pressed="true"] .modeLabel {
+  color: var(--n-ink);
+  font-weight: 500;
+}
+
+.mode:disabled .modeLabel {
+  color: var(--n-ink-3);
+}
+
+.split {
+  display: flex;
+  height: 100%;
+}
+
+.split > .sketch {
+  width: 50%;
+}
+
+.sketch {
+  --sketch-base: #ececee;
+  --sketch-side: #fff;
+  --sketch-mark: rgba(0, 0, 0, 0.1);
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: var(--sketch-base);
+}
+
+.sketch[data-mode="dark"] {
+  --sketch-base: #101012;
+  --sketch-side: #1c1c1e;
+  --sketch-mark: rgba(255, 255, 255, 0.15);
+}
+
+.sketchSide {
+  display: flex;
+  width: 36%;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--sketch-side);
+}
+
+.lights {
+  display: flex;
+  gap: 3px;
+  padding: 0 1px 3px;
+}
+
+.lights i {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #ff5f57;
+}
+
+.lights i:nth-child(2) {
+  background: #febc2e;
+}
+
+.lights i:nth-child(3) {
+  background: #28c840;
+}
+
+.line {
+  height: 5px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--sketch-mark);
+}
+
+.sideBlock {
+  height: 12px;
+  margin-top: auto;
+  border-radius: 3px;
+  background: var(--sketch-mark);
+  filter: brightness(0.92);
+}
+
+.sketchMain {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.heading {
+  width: 46px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--sketch-mark);
+  filter: contrast(1.6);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.tiles i {
+  height: 14px;
+  border-radius: 3px;
+  background: var(--sketch-mark);
+  opacity: 0.7;
+}
+
+.languages {
+  display: flex;
+  flex-direction: column;
+  margin: 0 -10px;
+}
+
+.languageList {
+  display: flex;
+  flex-direction: column;
+}
+
+.language {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s;
+}
+
+.language:hover {
+  background: color-mix(in srgb, var(--n-ink) 4%, transparent);
+}
+
+.flag {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  align-items: center;
+}
+
+.flag img {
+  width: 20px;
+  height: 20px;
+}
+
+.flag:has(> img[hidden]) {
+  display: none;
+}
+
+.languageText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.languageName {
+  overflow: hidden;
+  color: var(--n-ink);
+  font: 500 15px/1.375 var(--n-font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.languageEnglish {
+  color: var(--n-ink-3);
+  font: 400 13px/1.375 var(--n-font);
+}
+
+.languageCheck {
+  flex: none;
+  color: var(--n-ink);
+}
+
+.more {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--n-ink-2);
+  cursor: pointer;
+  font: 400 13px var(--n-font);
+}
+
+.more:hover {
+  color: var(--n-ink);
+}
+
+.moreChevron {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s;
+}
+
+.more[aria-expanded="true"] .moreChevron {
+  transform: rotate(180deg);
+}
+
+.current {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 12px;
+  transition: background-color 0.15s ease-out;
+}
+
+.current[data-over] {
+  background: color-mix(in srgb, var(--n-ink) 6%, transparent);
+}
+
+/* the window's own proportions, so Fill and Fit read the same here as behind the app */
+.thumb {
+  position: relative;
+  overflow: hidden;
+  width: 168px;
+  flex: none;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  background: var(--n-deep);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--n-ink) 10%, transparent);
+}
+
+/* overhangs the frame so the scaled blur never softens the thumbnail's edges */
+.thumb > img,
+.thumb > video,
+.thumb > canvas {
+  position: absolute;
+  width: calc(100% + 16px);
+  max-width: none;
+  height: calc(100% + 16px);
+  inset: -8px;
+}
+
+.thumbWash {
+  position: absolute;
+  background: var(--n-deep);
+  inset: 0;
+}
+
+.currentText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.currentKind {
+  color: var(--n-ink);
+  font: 500 14px/1.375 var(--n-font);
+}
+
+.currentHint {
+  max-width: 300px;
+  color: var(--n-ink-3);
+  font: 400 12.5px/1.45 var(--n-font);
+  text-wrap: pretty;
+}
+
+.currentActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.button:disabled,
+.quietButton:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.quietButton {
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--n-ink-2);
+  cursor: pointer;
+  font: 500 13px var(--n-font);
+  transition:
+    background-color 0.15s ease-out,
+    color 0.15s ease-out;
+}
+
+.quietButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--n-danger-ink) 10%, transparent);
+  color: var(--n-danger-ink);
+}
+
+.rowSlider {
+  display: block;
+  width: 220px;
+}
+
+.wallpaperSliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.sliderField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--n-ink-2);
+  font: 400 12px var(--n-font);
+}
+
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border: 1px dashed color-mix(in srgb, var(--n-ink) 18%, transparent);
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+
+.drop:hover,
+.drop[data-over] {
+  border-color: var(--n-ink-3);
+  background: color-mix(in srgb, var(--n-ink) 7%, transparent);
+}
+
+.dropIcon {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--n-ink) 7%, transparent);
+  color: var(--n-ink-3);
+}
+
+.dropTitle {
+  color: var(--n-ink);
+  font: 500 13px var(--n-font);
+}
+
+.dropHint {
+  margin-top: -6px;
+  color: var(--n-ink-3);
+  font: 400 11.5px var(--n-font);
+}
+
+.account {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--n-ink) 8%, transparent);
+  object-fit: cover;
+}
+
+.avatar[data-loading],
+.skeleton {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.accountText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.accountName {
+  overflow: hidden;
+  color: var(--n-ink);
+  font: 600 15px/1.4 var(--n-font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountSub {
+  overflow: hidden;
+  color: var(--n-ink-3);
+  font: 400 12.5px/1.45 var(--n-font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skeleton {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--n-ink) 8%, transparent);
+}
+
+.accountAction {
+  height: 32px;
+  flex: none;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--n-ink);
+  color: var(--n-field);
+  cursor: pointer;
+  font: 500 13px var(--n-font);
+  transition: opacity 150ms var(--n-ease-out);
+}
+
+.accountAction:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.accountAction[data-quiet] {
+  background: color-mix(in srgb, var(--n-ink) 8%, transparent);
+  color: var(--n-ink);
+}
+
+.accountAction:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.keyActions {
+  display: flex;
+  gap: 8px;
+}
+
+.about {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 2px 4px 4px;
+}
+
+.aboutLogo {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: 13px;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.35);
+}
+
+.aboutText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.aboutName {
+  color: var(--n-ink);
+  font: 700 20px/1.2 var(--n-font);
+  letter-spacing: var(--n-track-title);
+}
+
+.version {
+  color: var(--n-ink-3);
+  font: var(--n-type-numeral);
+  font-variant-numeric: tabular-nums;
+  user-select: text;
+}
+
+.progress {
+  display: block;
+  overflow: hidden;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--n-ink) 10%, transparent);
+}
+
+.progress > span {
+  display: block;
+  width: var(--done);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--n-accent);
+  transition: width 400ms var(--n-ease-out);
+}
+
+.action {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--n-ink);
+  cursor: pointer;
+  font: 500 14px/1.375 var(--n-font);
+  text-align: left;
+}
+
+.actionIcon {
+  flex: none;
+  color: var(--n-ink-3);
+  transition:
+    color 150ms var(--n-ease-out),
+    transform 200ms var(--n-ease-out);
+}
+
+.action:hover .actionIcon,
+.action:focus-visible .actionIcon {
+  color: var(--n-ink);
+  transform: translateX(2px);
+}
+
+.action:focus-visible {
+  outline: none;
+  color: var(--n-accent);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presetIcon,
+  .moreChevron {
+    transition: none;
+  }
+
+  .avatar[data-loading],
+  .skeleton {
+    animation: none;
+  }
+
+  .progress > span,
+  .actionIcon {
+    transition: none;
+  }
+}

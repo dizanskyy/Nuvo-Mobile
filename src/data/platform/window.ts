@@ -1,0 +1,99 @@
+import { useEffect, useState } from "react";
+import type { AppInfo, WinState } from "@/shell/nuvoShell";
+
+export interface WindowState {
+  isMaximized: boolean;
+  isFullScreen: boolean;
+  isEdgeToEdge: boolean;
+  trafficLights: boolean;
+}
+
+// macOS draws the frame, corners and traffic lights itself
+export const nativeFrame = typeof navigator !== "undefined" && /Mac/.test(navigator.userAgent);
+
+let winState: WinState = { maximized: false, fullscreen: false, visible: true };
+let appInfo: AppInfo | null = null;
+let connected = false;
+const listeners = new Set<() => void>();
+
+export function windowStateFrom(win: WinState, tiling: boolean, mac = nativeFrame): WindowState {
+  return {
+    isMaximized: win.maximized,
+    isFullScreen: win.fullscreen,
+    isEdgeToEdge: mac || win.maximized || win.fullscreen || tiling,
+    trafficLights: mac && !win.fullscreen,
+  };
+}
+
+function emit(): void {
+  for (const listener of [...listeners]) listener();
+}
+
+function connect(): void {
+  if (connected) return;
+  connected = true;
+  const shell = window.nuvoShell;
+  if (!shell) return;
+  const update = (next: WinState) => {
+    winState = next;
+    emit();
+  };
+  shell.getWinState().then(update, () => undefined);
+  shell.getAppInfo().then(
+    (info) => {
+      appInfo = info;
+      emit();
+    },
+    () => undefined,
+  );
+  shell.onWinState(update);
+}
+
+function current(): WindowState {
+  return windowStateFrom(winState, appInfo?.tiling === true);
+}
+
+export function useWindowState(): WindowState {
+  const [state, setState] = useState(current);
+  useEffect(() => {
+    connect();
+    const listener = () => setState(current());
+    listeners.add(listener);
+    listener();
+    return () => {
+      listeners.delete(listener);
+    };
+  }, []);
+  return state;
+}
+
+export function minimizeWindow(): void {
+  void window.nuvoShell?.minimize();
+}
+
+export function toggleMaximizeWindow(): void {
+  void window.nuvoShell?.toggleMaximize();
+}
+
+export function closeWindow(): void {
+  void window.nuvoShell?.close();
+}
+
+/** Tiling compositors have nowhere to minimize to. */
+export function canMinimizeWindow(): boolean {
+  connect();
+  return appInfo?.tiling !== true;
+}
+
+/** A pointer click (`detail > 0`) blurs the clicked button; keyboard activation has `detail` 0 and keeps focus. */
+export function useDisableButtonFocus(): void {
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (event.detail === 0) return;
+      const button = (event.target as Element | null)?.closest?.("button");
+      if (button && document.activeElement === button) (button as HTMLButtonElement).blur();
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+}

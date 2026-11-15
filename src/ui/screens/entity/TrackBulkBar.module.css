@@ -1,0 +1,36 @@
+.bar {
+  position: sticky;
+  bottom: calc(var(--page-inset-bottom, 0px) + var(--n-s-3));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--n-s-2);
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  margin: var(--n-s-4) auto 0;
+  padding: var(--n-s-2) var(--n-s-3);
+  border-radius: 22px;
+  background: var(--n-pop-solid);
+  box-shadow: var(--n-shadow-raised);
+  animation: rise 150ms var(--n-ease-out);
+}
+
+.count {
+  padding: 0 var(--n-s-2);
+  font: var(--n-type-label);
+  color: var(--n-ink-2, inherit);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}

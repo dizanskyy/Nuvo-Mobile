@@ -1,0 +1,64 @@
+name: Release files to the Telegram bot
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to upload
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: telegram-upload
+  cancel-in-progress: false
+
+jobs:
+  telegram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      READY: ${{ secrets.BOT_TOKEN != '' && secrets.TG_API_ID != '' && secrets.TG_API_HASH != '' && secrets.ADMIN_ID != '' && secrets.UPLOAD_SECRET != '' && secrets.WORKER_URL != '' }}
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - name: Skip without secrets
+        if: env.READY != 'true'
+        run: echo "Telegram secrets are not set, nothing to upload."
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: env.READY == 'true'
+        with:
+          sparse-checkout: .github/telegram
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: env.READY == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Install the pinned client
+        if: env.READY == 'true'
+        run: pip install --require-hashes -r .github/telegram/requirements.txt
+
+      - name: Download the release files
+        if: env.READY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir upload \
+            --pattern '*.AppImage' --pattern '*.deb' --pattern '*.rpm' --pattern '*.exe' --pattern '*.dmg'
+
+      - name: Upload to the bot
+        if: env.READY == 'true'
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
+          ADMIN_ID: ${{ secrets.ADMIN_ID }}
+          UPLOAD_SECRET: ${{ secrets.UPLOAD_SECRET }}
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          ADMIN_LANG: ${{ vars.ADMIN_LANG }}
+        run: python .github/telegram/upload.py "$TAG" upload/*

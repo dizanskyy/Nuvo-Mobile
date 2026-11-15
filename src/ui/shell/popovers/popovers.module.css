@@ -1,0 +1,433 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--n-ink);
+  user-select: none;
+}
+
+.segments {
+  display: flex;
+  isolation: isolate;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: var(--n-tray);
+  box-shadow: var(--n-tray-edge);
+}
+
+.segment {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--n-ink-2);
+  font: 500 12px/1 var(--n-font);
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform var(--n-t-quick) var(--n-ease-out),
+    background-color var(--n-t-quick) var(--n-ease-out),
+    box-shadow var(--n-t-quick) var(--n-ease-out),
+    color var(--n-t-quick) var(--n-ease-out);
+}
+
+.segment:hover {
+  color: var(--n-ink);
+}
+
+.segment:active {
+  transform: scale(var(--n-press-wide));
+  transition-duration: var(--n-t-instant);
+}
+
+.segment[aria-selected="true"] {
+  color: var(--n-ink);
+}
+
+.segment:focus-visible {
+  background: var(--n-focus-fill);
+  color: var(--n-ink);
+}
+
+.segments .segmentChip {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 6px;
+}
+
+.segments .segmentChip:not([aria-pressed="true"]) {
+  background: transparent;
+}
+
+.segments .segmentChip:not([aria-pressed="true"]):hover {
+  background: var(--n-tray-item-hover);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.customChip {
+  composes: chip from "./controls.module.css";
+  visibility: hidden;
+}
+
+.customChip[data-shown] {
+  visibility: visible;
+}
+
+.rulers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--n-hair);
+}
+
+.reveal {
+  animation: reveal var(--n-t-base) var(--n-ease-out) both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.remember {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--n-hair);
+}
+
+.status {
+  color: var(--n-ink-2);
+  font: 600 12px/1 var(--n-font);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.customRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.minutes {
+  display: block;
+  box-sizing: border-box;
+  width: 88px;
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--n-ink) 6%, transparent);
+  color: var(--n-ink);
+  font: 500 12px/1 var(--n-font);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition:
+    background-color var(--n-t-quick) var(--n-ease-out),
+    box-shadow var(--n-t-quick) var(--n-ease-out);
+}
+
+.minutes::placeholder {
+  color: var(--n-ink-3);
+}
+
+.minutes:hover {
+  background: color-mix(in srgb, var(--n-ink) 8%, transparent);
+}
+
+.minutes:focus {
+  box-shadow: var(--n-focus-glow);
+}
+
+.plainChip {
+  composes: chip from "./controls.module.css";
+  color: var(--n-ink);
+}
+
+.end {
+  margin-left: auto;
+  background: transparent;
+}
+
+.mark {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px 0 9px;
+  border: 0;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--n-ink) 6%, transparent);
+  color: var(--n-ink);
+  font: 500 12px/1 var(--n-font);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform var(--n-t-quick) var(--n-ease-out),
+    background-color var(--n-t-quick) var(--n-ease-out);
+}
+
+.mark:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--n-ink) 10%, transparent);
+}
+
+.mark:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.mark:focus-visible {
+  background: var(--n-focus-fill);
+}
+
+.mark:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.moments {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: -4px -8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moment {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  animation: reveal var(--n-t-base) var(--n-ease-out) both;
+  transition: background-color var(--n-t-quick) var(--n-ease-out);
+}
+
+.moment:hover,
+.moment:focus-within {
+  background: color-mix(in srgb, var(--n-ink) 5%, transparent);
+}
+
+.momentJump {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--n-ink);
+  font: 500 13px/18px var(--n-font);
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+}
+
+.momentTime {
+  flex: none;
+  min-width: 34px;
+  color: var(--n-ink-3);
+  font: 500 12px/18px var(--n-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.momentLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.momentForget {
+  margin-right: 3px;
+  opacity: 0;
+  transition: opacity var(--n-t-quick) var(--n-ease-out);
+}
+
+.moment:hover .momentForget,
+.moment:focus-within .momentForget {
+  opacity: 1;
+}
+
+.note {
+  margin: 0;
+  color: var(--n-ink-3);
+  font: 400 12px/17px var(--n-font);
+}
+
+.volumeShell {
+  position: fixed;
+  z-index: 900;
+  box-sizing: border-box;
+  width: 46px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--n-pop);
+  -webkit-backdrop-filter: var(--n-pop-blur);
+  backdrop-filter: var(--n-pop-blur);
+  box-shadow: var(--n-panel-rim);
+  outline: none;
+  transform-origin: 50% 100%;
+  animation: volume-in var(--n-t-base) var(--n-ease-out) both;
+}
+
+.volumeShell[data-state="out"] {
+  animation: volume-out var(--n-t-quick) var(--n-ease-in) both;
+  pointer-events: none;
+}
+
+@keyframes volume-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+@keyframes volume-out {
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+}
+
+.column {
+  position: relative;
+  width: 38px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--n-ink) 7%, transparent);
+  cursor: pointer;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  transition: transform var(--n-t-quick) var(--n-ease-out);
+}
+
+.column[data-dragging] {
+  transform: scaleX(1.04);
+}
+
+.column:focus-visible {
+  box-shadow: var(--n-focus-glow);
+}
+
+.fill {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--n-ink);
+  transition: height 100ms ease-out;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  color: var(--n-ink);
+  pointer-events: none;
+}
+
+.faceOnFill {
+  color: var(--n-field);
+  transition: clip-path 100ms ease-out;
+}
+
+.column[data-dragging] .fill,
+.column[data-dragging] .faceOnFill {
+  transition: none;
+}
+
+.mute {
+  display: flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform var(--n-t-quick) var(--n-ease-out);
+}
+
+.mute:active {
+  transform: scale(0.9);
+}
+
+.faceOnFill .mute {
+  pointer-events: none;
+}
+
+.percent {
+  font: 600 10px/1 var(--n-font);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .moment,
+  .volumeShell,
+  .volumeShell[data-state="out"] {
+    animation-name: fade;
+  }
+
+  .segment,
+  .segment:active,
+  .mark,
+  .mark:active:not(:disabled),
+  .mute:active,
+  .column,
+  .column[data-dragging],
+  .fill,
+  .faceOnFill {
+    transform: none;
+    transition: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

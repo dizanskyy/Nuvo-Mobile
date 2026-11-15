@@ -1,0 +1,95 @@
+/* Above the sheets (900), under the toast slot (1000), so a status line still shows over it */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: grid;
+  place-items: center;
+  padding: 72px var(--n-s-5) var(--n-s-6);
+  overflow-y: auto;
+  border-radius: 12px;
+  background: var(--n-deep);
+  color: var(--n-ink);
+  font-family: var(--n-font);
+  -webkit-font-smoothing: antialiased;
+  animation: state-fade var(--n-t-quick) linear both;
+}
+
+.top {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  display: flex;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  height: 56px;
+  padding: 12px 12px 0 0;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  outline: none;
+}
+
+.card > * {
+  animation: state-rise var(--n-t-base) var(--n-ease-out) both;
+}
+
+.card > :nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.card > :nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.card > :nth-child(n + 4) {
+  animation-delay: 120ms;
+}
+
+.mark {
+  margin-bottom: 20px;
+  color: var(--n-ink);
+}
+
+.title {
+  margin: 0;
+  font: 700 26px/1.2 var(--n-font);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.line {
+  max-width: 38ch;
+  margin: var(--n-s-2) 0 var(--n-s-5);
+  color: var(--n-ink-2);
+  font: 400 15px/1.5 var(--n-font);
+  text-wrap: pretty;
+}
+
+@keyframes state-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes state-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card > :nth-child(n) {
+    animation: state-fade var(--n-t-quick) linear both;
+    animation-delay: 0ms;
+  }
+}

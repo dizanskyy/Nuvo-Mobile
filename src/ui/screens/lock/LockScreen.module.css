@@ -1,0 +1,122 @@
+.well {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: var(--n-r-l);
+  background: var(--n-fill);
+  transition: background-color var(--n-t-quick) var(--n-ease-out);
+}
+
+.well:hover,
+.well:focus-within {
+  background: var(--n-fill-hover);
+}
+
+.well[data-invalid] {
+  background: color-mix(in srgb, var(--n-danger-ink) 12%, transparent);
+}
+
+.field {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  field-sizing: content;
+  min-height: 104px;
+  max-height: 200px;
+  padding: 14px 16px 34px;
+  border: 0;
+  background: transparent;
+  color: var(--n-ink);
+  font: 400 15px/1.55 var(--n-font);
+  text-align: left;
+  resize: none;
+  outline: none;
+}
+
+.field:focus-visible {
+  outline: none;
+}
+
+.field::placeholder {
+  color: var(--n-ink-3);
+}
+
+.count {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  color: var(--n-ink-3);
+  font: var(--n-type-numeral);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transition: color var(--n-t-quick) var(--n-ease-out);
+}
+
+.count[data-full] {
+  color: var(--n-ink);
+}
+
+.error {
+  align-self: flex-start;
+  margin: 10px 2px 0;
+  color: var(--n-danger-ink);
+  font: var(--n-type-label);
+  text-align: left;
+  text-wrap: pretty;
+  animation: lock-open var(--n-t-quick) var(--n-ease-out) both;
+}
+
+.unlock {
+  width: 100%;
+  height: 40px;
+  margin-top: 16px;
+  border-radius: var(--n-r-m);
+  font-weight: 500;
+}
+
+.spinner {
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  border: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: lock-spin 0.8s linear infinite;
+}
+
+.lost {
+  margin-top: 12px;
+}
+
+.lostText {
+  max-width: 36ch;
+  margin-top: 4px;
+  color: var(--n-ink-3);
+  font: 400 13px/1.5 var(--n-font);
+  text-wrap: pretty;
+  animation: lock-open var(--n-t-base) var(--n-ease-out) both;
+}
+
+@keyframes lock-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lock-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+
+  .error,
+  .lostText {
+    animation: none;
+  }
+}

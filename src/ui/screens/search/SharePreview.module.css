@@ -1,0 +1,37 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--n-s-4);
+}
+
+.caption {
+  margin: calc(-1 * var(--n-s-2)) 0 0;
+  color: var(--n-ink-2);
+  font: var(--n-type-caption);
+  letter-spacing: var(--n-track-caption);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  max-height: min(432px, 42vh);
+  margin-inline: calc(-1 * var(--n-s-2));
+  overflow-y: auto;
+}
+
+.rows [data-missing] * {
+  color: var(--n-ink-3);
+}
+
+.targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--n-s-2);
+}
+
+.line {
+  margin: 0;
+  color: var(--n-ink);
+  font: var(--n-type-body);
+  text-wrap: pretty;
+}

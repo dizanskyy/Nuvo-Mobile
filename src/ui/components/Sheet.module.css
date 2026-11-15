@@ -1,0 +1,81 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  padding: var(--n-s-5);
+}
+
+.layer[data-state="out"] {
+  pointer-events: none;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--n-dim);
+  animation: dim-in var(--n-t-base) var(--n-ease-out) both;
+}
+
+.backdrop[data-state="out"] {
+  animation: dim-out var(--n-t-quick) var(--n-ease-in) both;
+}
+
+@keyframes dim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dim-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.panel {
+  composes: pop from "./Popover.module.css";
+  --shift: 4px;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+  border-radius: 20px;
+  /* opaque, so a menu or popover opened from the sheet stays the one backdrop filter on screen */
+  background: var(--n-sheet);
+  box-shadow: var(--n-panel-shadow);
+  color: var(--n-ink);
+  transform-origin: 50% 50%;
+  outline: none;
+}
+
+.title {
+  margin: 0;
+  font: 600 calc(18px * var(--n-scale, 1)) / 1.25 var(--n-font);
+  letter-spacing: var(--n-track-title);
+  text-wrap: balance;
+}
+
+.body {
+  margin-top: 6px;
+  color: var(--n-ink-2);
+  font: 400 13px/1.45 var(--n-font);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .backdrop[data-state="out"] {
+    animation-duration: var(--n-t-quick);
+    animation-timing-function: linear;
+  }
+}

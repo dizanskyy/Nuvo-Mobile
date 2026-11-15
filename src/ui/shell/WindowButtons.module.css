@@ -1,0 +1,65 @@
+.buttons {
+  --close: #e5484d;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  height: 40px;
+}
+
+.tray {
+  box-sizing: border-box;
+  padding: 0 2px;
+  border-radius: 20px;
+  background: var(--n-tray);
+  box-shadow: var(--n-tray-edge);
+}
+
+.buttons .button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--n-ink-2);
+  transition:
+    background-color 150ms var(--n-ease-out),
+    color 150ms var(--n-ease-out),
+    transform var(--n-t-quick) var(--n-ease-out);
+}
+
+.buttons .button > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.buttons .button:hover:not(:disabled),
+.buttons .button:focus-visible {
+  background: var(--n-tray-item-hover);
+  color: var(--n-ink);
+  outline: none;
+}
+
+.buttons .close:hover:not(:disabled),
+.buttons .close:focus-visible {
+  background: color-mix(in srgb, var(--close) 16%, transparent);
+  color: var(--close);
+}
+
+.buttons .button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.buttons .button:disabled {
+  opacity: 0.35;
+}
+
+/* After a minimize the pointer never left the button; drop its hover until the pointer moves. */
+:global(html[data-hover-reset]) .buttons .button:hover {
+  background: transparent;
+  color: var(--n-ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buttons .button:active:not(:disabled) {
+    transform: none;
+  }
+}

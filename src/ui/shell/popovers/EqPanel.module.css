@@ -1,0 +1,317 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.divider {
+  width: 1px;
+  height: 14px;
+  margin: 0 6px;
+  background: var(--n-hair);
+}
+
+.eq {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  --curve: var(--n-ink);
+}
+
+.eq[data-off] {
+  --curve: var(--n-ink-3);
+}
+
+.plot {
+  position: relative;
+  height: 128px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--n-ink) 3%, transparent);
+  touch-action: none;
+}
+
+.curve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.zero {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--n-ink) 12%, transparent);
+  pointer-events: none;
+}
+
+.waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  --wave: color-mix(in oklab, var(--n-accent) 80%, var(--n-ink));
+}
+
+.waveTop {
+  stop-color: var(--wave);
+  stop-opacity: 0.26;
+}
+
+.waveBottom {
+  stop-color: var(--wave);
+  stop-opacity: 0;
+}
+
+.waveBack {
+  fill-opacity: 0.5;
+}
+
+.waveFront {
+  stroke: var(--wave);
+  stroke-opacity: 0.45;
+  stroke-width: 1px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.clip {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--n-ink) 12%, transparent);
+  transition: background-color 120ms linear;
+}
+
+.clip[data-on] {
+  background: var(--n-danger-ink);
+}
+
+.line,
+.area {
+  transition:
+    d var(--n-t-base) var(--n-ease-out),
+    fill var(--n-t-quick) var(--n-ease-out),
+    stroke var(--n-t-quick) var(--n-ease-out);
+}
+
+.line {
+  fill: none;
+  stroke: var(--curve);
+  stroke-width: 1.75px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.area {
+  fill: var(--curve);
+  fill-opacity: 0.07;
+}
+
+.eq[data-off] .area {
+  fill-opacity: 0.04;
+}
+
+.handle {
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border: 1.75px solid var(--curve);
+  border-radius: 50%;
+  background: var(--n-field);
+  outline: none;
+  cursor: ns-resize;
+  /* position lives in translate, which applies outside scale, so a scaled handle stays centred on the curve */
+  transition:
+    translate var(--n-t-base) var(--n-ease-out),
+    scale var(--n-t-quick) var(--n-ease-out),
+    background-color var(--n-t-quick) var(--n-ease-out),
+    border-color var(--n-t-quick) var(--n-ease-out);
+}
+
+.handle::before {
+  position: absolute;
+  inset: -9px;
+  content: "";
+}
+
+.handle:hover {
+  scale: 1.3;
+}
+
+.handle[data-active] {
+  background: var(--curve);
+  scale: 1.3;
+}
+
+.handle:focus-visible {
+  box-shadow: var(--n-focus-glow);
+  scale: 1.3;
+}
+
+.tip {
+  position: absolute;
+  z-index: 1;
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--n-island) 86%, #fff);
+  color: var(--n-island-ink);
+  font: 500 11px/1.3 var(--n-font);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, calc(-100% - 10px));
+  transition: opacity var(--n-t-quick) var(--n-ease-out);
+}
+
+.tip[data-on] {
+  opacity: 1;
+}
+
+.tip[data-below] {
+  transform: translate(-50%, 10px);
+}
+
+.eq[data-dragging] .line,
+.eq[data-dragging] .area,
+.eq[data-dragging] .handle {
+  transition: background-color var(--n-t-quick) var(--n-ease-out);
+}
+
+.bands {
+  position: relative;
+  height: 14px;
+}
+
+.band {
+  position: absolute;
+  transform: translateX(-50%);
+  color: var(--n-ink-3);
+  font: 500 10px/14px var(--n-font);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.customChip {
+  composes: chip from "./controls.module.css";
+}
+
+.ownChip {
+  composes: chip from "./controls.module.css";
+  gap: 2px;
+  padding-right: 4px;
+  cursor: default;
+}
+
+.ownName {
+  margin-right: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.ownName:focus-visible {
+  text-decoration: underline;
+}
+
+.ownIcon {
+  display: flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+  outline: none;
+  transition: opacity var(--n-t-quick) var(--n-ease-out);
+}
+
+.ownIcon:hover,
+.ownIcon:focus-visible {
+  opacity: 1;
+}
+
+.save {
+  position: relative;
+  margin-left: auto;
+}
+
+.saveChip {
+  composes: chip from "./controls.module.css";
+  gap: 4px;
+  padding: 0 8px 0 6px;
+  background: transparent;
+}
+
+.name {
+  display: block;
+  box-sizing: border-box;
+  width: 132px;
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--n-ink) 7%, transparent);
+  color: var(--n-ink);
+  font: 500 12px/1 var(--n-font);
+  outline: none;
+  transition: box-shadow var(--n-t-quick) var(--n-ease-out);
+}
+
+.name::placeholder {
+  color: var(--n-ink-3);
+}
+
+.name:focus {
+  box-shadow: var(--n-focus-glow);
+}
+
+.name[data-taken] {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--n-danger-ink) 22%, transparent);
+}
+
+.taken {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  z-index: 1;
+  margin-bottom: 6px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--n-island) 86%, #fff);
+  color: var(--n-island-ink);
+  font: 500 11px/1.3 var(--n-font);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line,
+  .area,
+  .handle {
+    transition: background-color var(--n-t-quick) linear;
+  }
+}

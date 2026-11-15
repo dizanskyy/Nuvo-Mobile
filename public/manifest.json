@@ -1,0 +1,18 @@
+{
+  "short_name": "Nuvo",
+  "name": "Nuvo Music",
+  "description": "Adaptive music player with glass material design and live lyrics",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/#/",
+  "background_color": "#0a0c10",
+  "theme_color": "#0a0c10",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -1,0 +1,230 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* At 1100 px the tabs and tools share one row only with New playlist as a square button */
+@container (max-width: 1059px) {
+  .create {
+    width: 32px;
+    padding: 0;
+  }
+
+  .createLabel {
+    display: none;
+  }
+
+  .tools .filter {
+    min-width: 120px;
+  }
+}
+
+.tabs,
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.tools {
+  gap: 6px;
+}
+
+.views {
+  display: flex;
+  isolation: isolate;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 18px;
+  background: var(--n-tray);
+  box-shadow: var(--n-tray-edge);
+}
+
+.views > button[aria-pressed] {
+  position: relative;
+  background: transparent;
+  box-shadow: none;
+}
+
+.views > button[aria-pressed="true"]:hover {
+  background: transparent;
+}
+
+.views > button[aria-pressed="false"]:hover {
+  background: var(--n-tray-item-hover);
+}
+
+.tabs > button {
+  position: relative;
+}
+
+.tabs > button[aria-selected="true"] {
+  background: transparent;
+}
+
+.tabLens {
+  background: var(--n-fill);
+  box-shadow: none;
+}
+
+/* The padding keeps the focus halo inside the scroll box */
+.tabs {
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  isolation: isolate;
+  min-width: 0;
+  margin: -3px;
+  padding: 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tools {
+  flex: 0 100 auto;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.filter {
+  flex: 0 1 240px;
+  min-width: 140px;
+  margin-inline-end: 4px;
+}
+
+.tools .filter > * {
+  width: 100%;
+}
+
+.stage {
+  position: relative;
+}
+
+.content {
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.line {
+  margin: 0;
+  color: var(--n-ink-2);
+  font: 400 14px/1.4 var(--n-font);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--n-s-3);
+}
+
+.inline .line {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  margin-top: 10px;
+}
+
+/* rows pad 8 px inside; pulling the list out by 8 puts every cover on the title's edge */
+.list,
+.placeholders {
+  position: relative;
+  margin-inline: -8px;
+}
+
+.placeholders {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.entry[data-importing] {
+  cursor: progress;
+}
+
+@container (max-width: 768px) {
+  .bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-top: 8px !important;
+  }
+  .tabs {
+    width: 100% !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .tabs > button {
+    flex-shrink: 0 !important;
+  }
+  .tools {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    overflow-x: auto !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+  .filter {
+    flex: 1 1 auto !important;
+    min-width: 100px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .bar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-top: 8px !important;
+  }
+  .tabs {
+    display: flex !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .tabs > button {
+    flex-shrink: 0 !important;
+  }
+  .tools {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    overflow-x: auto !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+  .filter {
+    flex: 1 1 auto !important;
+    min-width: 100px !important;
+  }
+}
+

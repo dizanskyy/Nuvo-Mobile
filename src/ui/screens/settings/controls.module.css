@@ -1,0 +1,152 @@
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.group:not(:has(> .panel > *)) {
+  display: none;
+}
+
+.groupLabel {
+  margin: 0;
+  padding: 0 4px 8px;
+  color: var(--n-ink-3);
+  font: var(--n-type-caption);
+  letter-spacing: var(--n-track-caption);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--n-ink) 4%, transparent);
+}
+
+:global(:root[data-theme="dark"]) .panel {
+  background: color-mix(in srgb, var(--n-ink) 6%, transparent);
+}
+
+.panel > * + * {
+  border-top: 1px solid color-mix(in srgb, var(--n-ink) 7%, transparent);
+}
+
+.row {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 0 16px;
+}
+
+.rowIcon {
+  display: flex;
+  flex: none;
+  color: var(--n-ink);
+}
+
+.text,
+.blockHead {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.text {
+  min-width: 33%;
+  flex: 1;
+}
+
+.blockHead {
+  max-width: 460px;
+}
+
+.title {
+  overflow: hidden;
+  color: var(--n-ink);
+  font: 500 14px/1.375 var(--n-font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blockHead .title {
+  white-space: normal;
+}
+
+.description,
+.blockDescription {
+  max-width: 440px;
+  color: var(--n-ink-3);
+  font: 400 12.5px/1.45 var(--n-font);
+  text-wrap: pretty;
+}
+
+.control {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.segmented {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--n-ink) 6%, transparent);
+}
+
+.segment {
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--n-ink-2);
+  cursor: pointer;
+  font: 500 12.5px/28px var(--n-font);
+  white-space: nowrap;
+  transition:
+    background-color 150ms var(--n-ease-out),
+    color 150ms var(--n-ease-out);
+}
+
+.segment:hover:not(:disabled, [aria-pressed="true"]) {
+  color: var(--n-ink);
+}
+
+.segment:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--n-ink) 8%, transparent);
+  color: var(--n-ink);
+}
+
+.segment[aria-pressed="true"] {
+  background: var(--n-lens);
+  box-shadow: var(--n-lens-shadow);
+  color: var(--n-ink);
+}
+
+.segment:disabled {
+  color: var(--n-ink-3);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment {
+    transition: none;
+  }
+}

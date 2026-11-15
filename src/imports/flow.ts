@@ -1,0 +1,197 @@
+import { listApple } from "./apple";
+import { CoreError, type ImportsDaemon } from "./core";
+import { listDeezer } from "./deezer";
+import { listSpotify } from "./spotify";
+import { detectLink, hostMatches } from "./detect";
+import type { FetchLike, Sleep } from "./http";
+import { ImportError, MAX_LABEL_CHARS, MAX_ROWS, type ImportSummary, type ImportTarget, type Listing, type RowSource } from "./types";
+import { listYandex } from "./yandex";
+import { listYoutube, type YoutubeLister } from "./youtube";
+
+export interface ListPorts {
+  fetch: FetchLike;
+  sleep?: Sleep;
+  youtube: YoutubeLister;
+  daemon: Pick<ImportsDaemon, "soundcloudListing" | "spotifyListing">;
+}
+
+export interface PostPorts {
+  daemon: Pick<ImportsDaemon, "start"> & Partial<Pick<ImportsDaemon, "appendRows">>;
+  labels: { fallback(source: RowSource): string; likes(name: string): string };
+  started(summaries: ImportSummary[]): void;
+}
+
+export const PROGRESS_EVERY_MS = 120;
+export const POST_PAGE_ROWS = 500;
+
+export function throttle(fn: (count: number) => void, everyMs: number, now: () => number = Date.now): (count: number) => void {
+  let last = -Infinity;
+  return (count) => {
+    const at = now();
+    if (at - last < everyMs) return;
+    last = at;
+    fn(count);
+  };
+}
+
+function daemonError(error: unknown): unknown {
+  if (!(error instanceof CoreError)) return error;
+  if (error.status === 423) return new ImportError("locked");
+  return new ImportError("daemon");
+}
+
+async function listByDaemon(read: () => Promise<Listing>): Promise<Listing> {
+  try {
+    return await read();
+  } catch (error) {
+    if (!(error instanceof CoreError)) throw error;
+    if (error.status === 400) throw new ImportError("bad_link");
+    if (error.status === 404) throw new ImportError("gone");
+    if (error.code === "SOURCE_CHANGED") throw new ImportError("source_changed");
+    if (error.status === 423 || error.status === 0) throw daemonError(error);
+    throw new ImportError("network");
+  }
+}
+
+function spotifyReadable(url: string): boolean {
+  const { hostname, pathname } = new URL(url);
+  if (hostname === "spotify.link") return true;
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0]?.startsWith("intl-")) parts.shift();
+  return parts.length === 2 && (parts[0] === "playlist" || parts[0] === "album");
+}
+
+export async function listLink(text: string, ports: ListPorts, signal: AbortSignal, onProgress: (count: number) => void = () => {}): Promise<Listing> {
+  const detected = detectLink(text);
+  if ("error" in detected) throw new ImportError(detected.error, detected.host);
+  const progress = throttle(onProgress, PROGRESS_EVERY_MS);
+  const http = { fetch: ports.fetch, sleep: ports.sleep, signal };
+  let listing: Listing;
+  switch (detected.kind) {
+    case "spotify":
+      listing = await listSpotify(detected.url, signal);
+      break;
+    case "yandex-music":
+      listing = await listYandex(detected.url, http, progress);
+      break;
+    case "vk":
+      throw new ImportError("login_required");
+    case "apple-music":
+      listing = await listApple(detected.url, http);
+      break;
+    case "deezer":
+      listing = await listDeezer(detected.url, http, progress);
+      break;
+    case "youtube":
+      listing = await listYoutube(detected.url, ports.youtube, signal);
+      break;
+    case "soundcloud":
+      listing = await listByDaemon(() => ports.daemon.soundcloudListing(detected.url, signal));
+      break;
+  }
+  signal.throwIfAborted();
+  if (listing.rows.length === 0) throw new ImportError("empty");
+  if (listing.rows.length > MAX_ROWS) {
+    listing = {
+      ...listing,
+      rows: listing.rows.slice(0, MAX_ROWS),
+      notice: { kind: "capped", kept: MAX_ROWS },
+    };
+  }
+  // the throttle may have dropped the last counts; the screen must end on the true one
+  onProgress(listing.rows.length);
+  return listing;
+}
+
+const SOUNDCLOUD_NAME = /^[A-Za-z0-9_-]{1,64}$/;
+
+export function soundcloudLikesUrl(nameOrUrl: string): string {
+  const value = nameOrUrl.trim().replace(/^@/, "");
+  if (!value) throw new ImportError("missing_name");
+  const detected = detectLink(value);
+  if ("kind" in detected && detected.kind === "soundcloud" && hostMatches(new URL(detected.url).hostname, "soundcloud.com")) return detected.url;
+  if (!SOUNDCLOUD_NAME.test(value)) throw new ImportError("bad_link");
+  return `https://soundcloud.com/${value}/likes`;
+}
+
+export function labelOf(listing: Listing, labels: PostPorts["labels"]): string {
+  const raw = listing.likesOf ? labels.likes(listing.likesOf) : listing.label;
+  const label = raw.trim() || labels.fallback(listing.source);
+  return [...label].slice(0, MAX_LABEL_CHARS).join("");
+}
+
+export async function postListing(listing: Listing, target: ImportTarget | undefined, ports: PostPorts, signal?: AbortSignal): Promise<ImportSummary[]> {
+  let summaries: ImportSummary[];
+  try {
+    summaries = await ports.daemon.start(
+      {
+        source: listing.source,
+        label: labelOf(listing, ports.labels),
+        rows: listing.rows.slice(0, POST_PAGE_ROWS),
+        ...(target && target.kind !== "new" ? { target } : {}),
+      },
+      signal,
+    );
+  } catch (error) {
+    throw daemonError(error);
+  }
+  ports.started(summaries);
+  const first = summaries[0];
+  if (listing.rows.length > POST_PAGE_ROWS && first && ports.daemon.appendRows) {
+    try {
+      for (let at = POST_PAGE_ROWS; at < listing.rows.length; at += POST_PAGE_ROWS) {
+        signal?.throwIfAborted();
+        await ports.daemon.appendRows(first.id, listing.rows.slice(at, at + POST_PAGE_ROWS), signal);
+      }
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      throw new ImportError("cut");
+    }
+  }
+  return summaries;
+}
+
+export interface LinkImportOptions {
+  target?: ImportTarget;
+  signal: AbortSignal;
+  onProgress?: (count: number) => void;
+}
+
+export async function importFromLink(
+  text: string,
+  ports: ListPorts & PostPorts,
+  options: LinkImportOptions,
+): Promise<{ listing: Listing; summaries: ImportSummary[] }> {
+  const listing = await listLink(text, ports, options.signal, options.onProgress);
+  return {
+    listing,
+    summaries: await postListing(listing, options.target, ports, options.signal),
+  };
+}
+
+export async function importSoundCloudLikes(
+  nameOrUrl: string,
+  ports: ListPorts & PostPorts,
+  options: LinkImportOptions,
+): Promise<{ listing: Listing; summaries: ImportSummary[] }> {
+  return importFromLink(soundcloudLikesUrl(nameOrUrl), ports, options);
+}
+
+export async function importFile(
+  file: { name: string; data: string },
+  target: ImportTarget | undefined,
+  ports: Omit<PostPorts, "labels">,
+): Promise<ImportSummary[]> {
+  let summaries: ImportSummary[];
+  try {
+    summaries = await ports.daemon.start({
+      file,
+      ...(target && target.kind !== "new" ? { target } : {}),
+    });
+  } catch (error) {
+    if (error instanceof CoreError && (error.status === 400 || error.status === 404)) throw new ImportError("bad_file");
+    throw daemonError(error);
+  }
+  ports.started(summaries);
+  return summaries;
+}

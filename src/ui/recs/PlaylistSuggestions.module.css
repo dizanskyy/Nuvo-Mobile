@@ -1,0 +1,15 @@
+.suggestions {
+  margin-top: 40px;
+  padding: 0 8px;
+}
+
+/* rows pad 8 px; pulling them out by 8 puts the covers on the title's edge */
+.rows {
+  margin: -14px -8px 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

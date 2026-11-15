@@ -1,0 +1,174 @@
+/* Sits 12px above the player bar (6px inset + 64px tall), so it never covers the player controls */
+.stage {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  z-index: 1000;
+  display: grid;
+  justify-items: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+:global(body:has([data-island])) .stage {
+  bottom: 82px;
+}
+
+.card {
+  grid-area: 1 / 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: min(480px, calc(100vw - 32px));
+  min-height: 40px;
+  padding: 6px 14px 6px 12px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--n-pop);
+  -webkit-backdrop-filter: var(--n-pop-blur);
+  backdrop-filter: var(--n-pop-blur);
+  box-shadow: var(--n-panel-shadow-s);
+  color: var(--n-ink);
+  font-family: var(--n-font);
+  transform-origin: bottom center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.card[data-action] {
+  padding-right: 6px;
+}
+
+.glyph {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--n-ink-3);
+}
+
+.glyph[data-variant="success"] {
+  color: var(--n-ink);
+}
+
+.glyph[data-variant="error"] {
+  color: var(--n-danger-ink);
+}
+
+.spinner {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  margin: 1px;
+  border: 1.5px solid color-mix(in srgb, var(--n-ink) 18%, transparent);
+  border-top-color: var(--n-ink-2);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.message {
+  min-width: 0;
+  padding-block: 4px;
+  font: 500 13px/18px var(--n-font);
+  text-wrap: pretty;
+}
+
+.description {
+  flex-shrink: 1000;
+  min-width: 48px;
+  max-width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--n-ink-3);
+  font: 400 13px/18px var(--n-font);
+}
+
+.dot {
+  color: var(--n-ink-3);
+  font: 400 13px/18px var(--n-font);
+}
+
+.action {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 28px;
+  margin-left: 4px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--n-fill);
+  color: var(--n-ink);
+  font: 500 13px/1 var(--n-font);
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--n-ease-out),
+    transform 150ms var(--n-ease-out);
+}
+
+.action:hover {
+  background: var(--n-fill-hover);
+}
+
+.action:focus-visible {
+  outline: none;
+  background: var(--n-focus-fill);
+}
+
+.action:active {
+  transform: scale(0.96);
+}
+
+.card[data-progress]::after,
+.progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.card[data-progress]::after {
+  content: "";
+  background: var(--n-fill);
+}
+
+.progress {
+  z-index: 1;
+  background: var(--n-ink-2);
+  transform-origin: left center;
+  transition: transform 900ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+
+  .action:active {
+    transform: none;
+  }
+
+  .progress {
+    transition: none;
+  }
+}

@@ -1,0 +1,107 @@
+.local {
+  display: flex;
+  flex-direction: column;
+  gap: var(--n-s-3);
+}
+
+.empty {
+  padding-top: var(--n-s-5);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--n-s-2);
+}
+
+.folders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--n-s-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.folder {
+  height: 32px;
+  max-width: 100%;
+  padding: 0 var(--n-s-1) 0 var(--n-s-3);
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+.folder[data-missing] {
+  color: var(--n-ink-2);
+}
+
+.missing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--n-s-1);
+  font: var(--n-type-caption);
+}
+
+.path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* long paths keep their last folder visible */
+  direction: rtl;
+  text-align: left;
+  unicode-bidi: plaintext;
+  max-width: 320px;
+}
+
+.count {
+  color: var(--n-ink-2);
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--n-ink-2);
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--n-ease-out),
+    color 150ms var(--n-ease-out);
+}
+
+.remove:hover,
+.remove:focus-visible {
+  background: var(--n-hover);
+  color: var(--n-ink);
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.line {
+  margin: 0;
+  color: var(--n-ink-2);
+  font: var(--n-type-body);
+  overflow-wrap: anywhere;
+}
+
+/* rows pad 8 px inside; pulling them out by 8 puts every cover on the title's edge */
+.rows[aria-busy="true"] {
+  opacity: 0.6;
+  transition: opacity 150ms ease-out;
+}
+
+.rows {
+  margin-inline: calc(-1 * var(--n-s-2));
+}

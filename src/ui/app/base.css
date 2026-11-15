@@ -1,0 +1,51 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+html {
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  overflow: hidden;
+  background: transparent;
+  font-family: var(--n-font-stack, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable", system-ui, sans-serif);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+[data-window-drag] {
+  -webkit-app-region: drag;
+}
+
+[data-layer],
+[data-no-window-drag],
+[data-window-drag] :is(button, a, input, textarea, select, label, [role], [tabindex], [contenteditable]) {
+  -webkit-app-region: no-drag;
+}

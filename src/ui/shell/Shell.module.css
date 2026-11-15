@@ -1,0 +1,93 @@
+/* --n-gutter mirrors contentGutter() in geometry.ts: keep them in step */
+.shell {
+  --n-gutter: 12px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--n-deep);
+  color: var(--n-ink);
+  font-family: var(--n-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell[data-edge] {
+  border-radius: 0;
+}
+
+/* Size containment lets legacy pages measure the page area in cqh */
+.content {
+  position: absolute;
+  top: 62px;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 12px;
+  container-type: size;
+  scrollbar-gutter: stable;
+}
+
+.content[data-player-below] {
+  bottom: 76px;
+}
+
+.content[data-locked] {
+  overflow-y: hidden;
+}
+
+.column {
+  --page-inset-top: 0px;
+  --page-inset-bottom: 70px;
+  --floating-inset-bottom: 0px;
+  box-sizing: content-box;
+  min-height: calc(100% - 82px);
+  padding: 6px var(--n-gutter) 76px;
+}
+
+.content[data-player-below] .column {
+  --page-inset-bottom: 0px;
+  padding-bottom: 16px;
+}
+
+/* Legacy h-full pages scroll inside themselves: full height below the top bar, own player padding */
+.column:has(> :global(.h-full)) {
+  padding-inline: 0;
+  padding-bottom: 0;
+}
+
+.column > :global(.h-full) {
+  height: calc(100cqh - 6px);
+}
+
+/* Over the whole window: the body's 4 px gutter would move the measured column edges */
+.karaoke {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  overflow: hidden;
+  border-radius: inherit;
+  background: #000;
+}
+
+@media (max-width: 768px) {
+  .shell {
+    border-radius: 0;
+  }
+  .content {
+    top: 54px;
+    bottom: 64px;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+  }
+  .content[data-player-below] {
+    bottom: 136px;
+  }
+  .column {
+    padding: 6px 12px calc(64px + env(safe-area-inset-bottom, 16px));
+  }
+}
+

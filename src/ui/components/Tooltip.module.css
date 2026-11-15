@@ -1,0 +1,32 @@
+.anchor {
+  display: contents;
+}
+
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  max-width: 240px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  /* opaque: tooltips show over open popovers, which own the one backdrop filter */
+  background: color-mix(in srgb, var(--n-island) 86%, #fff);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.45);
+  color: var(--n-island-ink);
+  font: 500 12px/1.25 var(--n-font);
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.tooltip[data-placed] {
+  visibility: visible;
+  animation: tooltip-in var(--n-t-quick) var(--n-ease-out) both;
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+  }
+}
