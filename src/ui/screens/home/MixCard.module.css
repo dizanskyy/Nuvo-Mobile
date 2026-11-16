@@ -136,3 +136,21 @@
 .leadCaption .subtitle {
   margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+  .card {
+    width: 145px;
+  }
+  .lead {
+    width: 185px;
+  }
+  .word {
+    font-size: 32px;
+  }
+  .number {
+    font-size: 34px;
+  }
+  .leadTitle {
+    font-size: 20px;
+  }
+}

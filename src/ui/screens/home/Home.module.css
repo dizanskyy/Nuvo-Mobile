@@ -21,3 +21,13 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
+
+@media (max-width: 768px) {
+  .home {
+    gap: 16px;
+  }
+  .mixes {
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+}

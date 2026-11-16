@@ -98,3 +98,13 @@
   flex: none;
   color: var(--n-accent);
 }
+
+@media (max-width: 768px) {
+  .shelf {
+    gap: 14px;
+    padding-bottom: 14px;
+  }
+  .card {
+    width: 140px;
+  }
+}

@@ -550,3 +550,120 @@
     opacity: 0;
   }
 }
+
+@media (max-width: 768px) {
+  .root {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .top {
+    height: 54px;
+  }
+  .close {
+    top: 9px;
+    left: 8px;
+  }
+  .sourceRow {
+    left: 48px;
+    right: 48px;
+    top: 9px;
+  }
+  .windowButtons {
+    display: none;
+  }
+  .left {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-width: 340px;
+    margin: 54px auto 16px;
+    height: auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .left > :first-child {
+    width: min(260px, 70vw) !important;
+    height: min(260px, 70vw) !important;
+    margin: 0 auto;
+  }
+  .title,
+  .artist {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    text-align: center;
+  }
+  .title {
+    margin-top: 16px;
+  }
+  .artist {
+    margin-top: 4px;
+  }
+  .like {
+    position: static;
+    margin-top: 8px;
+  }
+  .dislike {
+    position: static;
+  }
+  .seek {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .times {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 6px;
+  }
+  .transport {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .volume {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 14px;
+  }
+  .lines {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    min-height: 200px;
+    padding: 0 16px 40px;
+    box-sizing: border-box;
+  }
+  .quiet {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    padding: 24px 16px;
+    box-sizing: border-box;
+  }
+  .made {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    justify-content: center;
+    padding: 16px 0;
+  }
+}

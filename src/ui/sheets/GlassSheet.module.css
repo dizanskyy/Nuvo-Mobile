@@ -194,3 +194,13 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .layer {
+    padding: 8px;
+  }
+  .panel {
+    padding: 14px;
+    border-radius: 18px;
+  }
+}

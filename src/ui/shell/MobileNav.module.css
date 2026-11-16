@@ -33,6 +33,11 @@
     color: var(--n-ink-3);
     text-decoration: none;
     cursor: pointer;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    outline: none;
     transition: color 150ms var(--n-ease-out), transform var(--n-t-quick) var(--n-ease-out);
   }
 
@@ -40,8 +45,14 @@
     transform: scale(0.92);
   }
 
-  .item[aria-current="page"] {
+  .item[aria-current="page"],
+  .item[aria-pressed="true"] {
     color: var(--n-ink);
+  }
+
+  .buttonItem {
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   .iconWrap {

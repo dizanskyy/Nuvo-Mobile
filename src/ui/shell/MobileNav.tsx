@@ -4,6 +4,7 @@ import { Icon } from "../icons/Icon";
 import type { IconName } from "../icons";
 import { useTranslation } from "../ports/i18n";
 import { Lens } from "../components/Lens";
+import { useModalStore } from "../ports/navigation";
 import { activeNav, navigateWithTransition, type NavItem } from "./navigate";
 import styles from "./MobileNav.module.css";
 
@@ -19,6 +20,8 @@ export function MobileNav(): JSX.Element {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const active = activeNav(pathname);
+  const openSettings = useModalStore((state) => state.openSettings);
+  const settingsOpen = useModalStore((state) => state.settingsOpen);
 
   const sections: Section[] = [
     { id: "home", icon: "home", label: t("ui.nav.home"), href: "/" },
@@ -36,7 +39,7 @@ export function MobileNav(): JSX.Element {
   return (
     <nav aria-label="Mobile Navigation" className={styles.bar}>
       {sections.map((section) => {
-        const isCurrent = section.id === active;
+        const isCurrent = !settingsOpen && section.id === active;
         return (
           <a
             key={section.id}
@@ -55,6 +58,21 @@ export function MobileNav(): JSX.Element {
           </a>
         );
       })}
+      <button
+        type="button"
+        data-nav="settings"
+        aria-label={t("ui.nav.settings")}
+        aria-pressed={settingsOpen}
+        aria-current={settingsOpen ? "page" : undefined}
+        className={`${styles.item} ${styles.buttonItem}`}
+        onClick={() => openSettings()}
+      >
+        <div className={styles.iconWrap}>
+          {settingsOpen ? <Lens group="mobile-nav" value="settings" radius={15} /> : null}
+          <Icon name="settings" size={22} />
+        </div>
+        <span className={styles.label}>{t("ui.nav.settings")}</span>
+      </button>
     </nav>
   );
 }

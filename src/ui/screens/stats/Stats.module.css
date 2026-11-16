@@ -782,4 +782,18 @@
     align-items: flex-start;
     gap: 16px;
   }
+  .dayPlan {
+    grid-template-columns: 1fr !important;
+    justify-items: center;
+    gap: 16px;
+  }
+  .clock {
+    width: 200px;
+    height: 200px;
+  }
+  .calendar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
 }

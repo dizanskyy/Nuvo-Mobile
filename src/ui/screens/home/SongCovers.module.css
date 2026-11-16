@@ -85,3 +85,18 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .shuffle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  .covers {
+    gap: 14px;
+  }
+  .lead {
+    padding-inline-end: 14px;
+  }
+}

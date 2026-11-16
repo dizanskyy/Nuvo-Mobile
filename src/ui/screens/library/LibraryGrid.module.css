@@ -133,3 +133,13 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  .tile {
+    padding: 0 0 12px;
+  }
+}

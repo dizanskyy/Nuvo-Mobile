@@ -150,3 +150,10 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

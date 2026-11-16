@@ -110,3 +110,12 @@
     animation: appear var(--n-t-quick) linear both;
   }
 }
+
+@media (max-width: 768px) {
+  .row {
+    gap: 14px;
+  }
+  .card {
+    width: 140px;
+  }
+}

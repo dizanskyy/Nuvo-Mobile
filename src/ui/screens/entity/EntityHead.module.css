@@ -159,3 +159,67 @@
 .tools > [role="search"] {
   margin-inline-end: 4px;
 }
+
+@media (max-width: 768px) {
+  .head {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+  }
+  .cover {
+    width: 140px;
+    height: 140px;
+  }
+  .head[data-shape="circle"] .cover {
+    width: 130px;
+    height: 130px;
+  }
+  .column {
+    min-height: auto;
+    align-items: center;
+    width: 100%;
+    padding-top: 0;
+  }
+  .titleLine {
+    justify-content: center;
+    width: 100%;
+  }
+  .head .title {
+    font-size: 24px;
+    text-align: center;
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    white-space: normal;
+  }
+  .description {
+    width: 100%;
+    text-align: center;
+  }
+  .description > button,
+  .description > input {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .chips {
+    justify-content: center;
+  }
+  .actions {
+    justify-content: center;
+    padding-top: 14px;
+    width: 100%;
+    gap: 8px;
+  }
+  .buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .tools {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
