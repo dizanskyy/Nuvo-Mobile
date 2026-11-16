@@ -189,9 +189,10 @@ export const filled = (values: readonly number[]): number => values.filter((valu
 export type Fullness = "never" | "silent" | "first" | "full";
 
 export function fullness(stats: StatsOverview): Fullness {
-  if (!stats.firstPlayedAt) return "never";
-  if (stats.totals.listenedMs === 0) return "silent";
-  return stats.calendar.filter((day) => day.plays > 0).length < MIN_CALENDAR_DAYS ? "first" : "full";
+  if (!stats?.firstPlayedAt) return "never";
+  if (!stats.totals || (stats.totals.listenedMs ?? 0) === 0) return "silent";
+  const calendar = Array.isArray(stats.calendar) ? stats.calendar : [];
+  return calendar.filter((day) => (day?.plays ?? 0) > 0).length < MIN_CALENDAR_DAYS ? "first" : "full";
 }
 
 export function weekdays(locale: string): [number, string][] {

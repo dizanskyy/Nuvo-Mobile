@@ -202,5 +202,21 @@
   .panel {
     padding: 14px;
     border-radius: 18px;
+    max-width: calc(100vw - 16px) !important;
+    width: 100% !important;
+  }
+  .footer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .start {
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+  .footer button {
+    width: 100% !important;
+    height: 40px !important;
   }
 }

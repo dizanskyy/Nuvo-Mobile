@@ -250,6 +250,7 @@
     padding: 0 2px;
   }
   .rule,
+  :global([data-window-controls]),
   :global([data-window-buttons]),
   .windowButtons {
     display: none !important;

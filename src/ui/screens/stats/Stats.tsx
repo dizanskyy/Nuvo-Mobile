@@ -99,15 +99,16 @@ function story(stats: StatsOverview, t: TFunction): string | null {
 function Lead({ stats, range }: { stats: StatsOverview; range: RangeKey }): JSX.Element {
   const { t, locale } = useTranslation();
   const top = stats.top?.tracks?.[0];
-  const delta = change(stats.totals.listenedMs, stats.previous?.listenedMs);
+  const listenedMs = stats.totals?.listenedMs ?? 0;
+  const delta = change(listenedMs, stats.previous?.listenedMs);
   const sentence = story(stats, t);
-  const track = top ? rowTrack(top.track) : null;
+  const track = top && top.track ? rowTrack(top.track) : null;
   const navigate = useNavigate();
   return (
     <div className={styles.lead}>
       <div className={styles.leadText}>
         <p className={styles.leadNumber} data-testid="stats-lead">
-          {formatTime(stats.totals.listenedMs, t)}
+          {formatTime(listenedMs, t)}
         </p>
         <p className={styles.leadLine}>
           {leadText(range, stats, t, locale)}
@@ -115,7 +116,7 @@ function Lead({ stats, range }: { stats: StatsOverview; range: RangeKey }): JSX.
         </p>
         {sentence ? <p className={styles.leadStory}>{sentence}</p> : null}
       </div>
-      {top && track ? (
+      {top && top.title && track ? (
         <button type="button" className={styles.leadSong} onClick={() => navigateWithTransition(navigate, trackHref(top.id))}>
           <Cover src={top.coverUrl ?? ""} size={112} radius={10} />
           <span className={styles.leadSongText}>
@@ -132,7 +133,8 @@ function Lead({ stats, range }: { stats: StatsOverview; range: RangeKey }): JSX.
 
 function Figures({ stats }: { stats: StatsOverview }): JSX.Element {
   const { t, locale } = useTranslation();
-  const { totals, previous } = stats;
+  const totals = stats.totals ?? { plays: 0, tracks: 0, artists: 0, albums: 0, activeDays: 0, sessions: 0, skipRate: 0, completedRate: 0 };
+  const previous = stats.previous ?? null;
   return (
     <div className={styles.figures}>
       <Figure value={count(totals.plays, locale)} label={t("ui.stats.label_plays")} delta={<Delta now={totals.plays} before={previous?.plays} />} />
@@ -144,7 +146,7 @@ function Figures({ stats }: { stats: StatsOverview }): JSX.Element {
         label={t("ui.stats.label_active_days")}
         delta={<Delta now={totals.activeDays} before={previous?.activeDays} />}
       />
-      <Figure value={t("ui.stats.days", { count: stats.currentStreak })} label={t("ui.stats.label_streak", { best: stats.longestStreak.days })} />
+      <Figure value={t("ui.stats.days", { count: stats.currentStreak ?? 0 })} label={t("ui.stats.label_streak", { best: stats.longestStreak?.days ?? 0 })} />
     </div>
   );
 }
@@ -229,7 +231,7 @@ function Top({ stats }: { stats: StatsOverview }): JSX.Element {
   const kinds = TOP_KINDS.filter((item) => (stats.top?.[item] ?? []).length > 0);
   const shownKind = kinds.includes(kind) ? kind : "tracks";
   const rows = (stats.top?.[shownKind] ?? []).slice(0, all ? undefined : TOP_SHOWN);
-  const meta = (row: StatsRow) => `${t("ui.stats.plays", { count: row.plays })} · ${formatTime(row.listenedMs, t)}`;
+  const meta = (row: StatsRow) => `${t("ui.stats.plays", { count: row?.plays ?? 0 })} · ${formatTime(row?.listenedMs ?? 0, t)}`;
   const named = rows.map((row) => (shownKind === "playlists" && row.id === "likes" ? { ...row, title: t("ui.library.liked") } : row));
   return (
     <Section id="top" title={t("ui.stats.top")}>
@@ -268,15 +270,17 @@ function Top({ stats }: { stats: StatsOverview }): JSX.Element {
 
 function Habits({ stats }: { stats: StatsOverview }): JSX.Element {
   const { t, locale } = useTranslation();
-  const { totals, previous, sessions } = stats;
+  const totals = stats.totals ?? { plays: 0, tracks: 0, artists: 0, albums: 0, activeDays: 0, sessions: 0, skipRate: 0, completedRate: 0 };
+  const previous = stats.previous ?? null;
+  const sessions = stats.sessions ?? { count: 0, averageMs: 0, longestMs: 0, longestStartedAt: null, longestTracks: 0 };
   const percent = (rate: number) => new Intl.NumberFormat(locale, { style: "percent" }).format(rate);
-  const total = (list: StatsShare[]) => list.reduce((sum, share) => sum + share.listenedMs, 0);
+  const total = (list: StatsShare[]) => (list || []).reduce((sum, share) => sum + (share?.listenedMs ?? 0), 0);
   const shares = (list: StatsShare[], prefix: string): ShareItem[] =>
-    list.map((share) => ({
+    (list || []).map((share) => ({
       key: share.kind,
       label: t(`ui.stats.${prefix}.${share.kind}`),
-      share: share.listenedMs / Math.max(1, total(list)),
-      note: formatTime(share.listenedMs, t),
+      share: (share.listenedMs ?? 0) / Math.max(1, total(list)),
+      note: formatTime(share.listenedMs ?? 0, t),
     }));
   return (
     <Section id="habits" title={t("ui.stats.habits")}>
@@ -503,7 +507,7 @@ export function Stats(): JSX.Element {
     { label: t("ui.stats.export_csv"), disabled: state === "never", onSelect: () => save("csv") },
     "separator",
     ...(range !== "all"
-      ? [{ label: t("ui.stats.delete_range"), disabled: !data || data.totals.listenedMs === 0, onSelect: () => setDeleting("range") } as MenuItem]
+      ? [{ label: t("ui.stats.delete_range"), disabled: !data || !data.totals || (data.totals.listenedMs ?? 0) === 0, onSelect: () => setDeleting("range") } as MenuItem]
       : []),
     { label: t("ui.stats.delete_all"), danger: true, disabled: state === "never", onSelect: () => setDeleting("all") },
   ];

@@ -209,3 +209,14 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .head {
+    gap: 10px;
+    padding-right: 0;
+  }
+  .songs {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+}

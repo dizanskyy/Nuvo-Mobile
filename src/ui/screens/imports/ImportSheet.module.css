@@ -67,3 +67,18 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .segments {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    box-sizing: border-box !important;
+  }
+  .segment {
+    width: 100% !important;
+    text-align: center !important;
+    height: 36px !important;
+    font-size: 13px !important;
+  }
+}

@@ -181,15 +181,18 @@
   }
   .tools {
     width: 100% !important;
+    flex-wrap: wrap !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    overflow-x: auto !important;
-    gap: 6px !important;
+    overflow-x: visible !important;
+    gap: 8px !important;
     padding-bottom: 4px !important;
   }
   .filter {
-    flex: 1 1 auto !important;
-    min-width: 100px !important;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    margin-bottom: 2px !important;
   }
 }
 
@@ -216,15 +219,18 @@
   .tools {
     display: flex !important;
     width: 100% !important;
+    flex-wrap: wrap !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    overflow-x: auto !important;
-    gap: 6px !important;
+    overflow-x: visible !important;
+    gap: 8px !important;
     padding-bottom: 4px !important;
   }
   .filter {
-    flex: 1 1 auto !important;
-    min-width: 100px !important;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    margin-bottom: 2px !important;
   }
 }
 

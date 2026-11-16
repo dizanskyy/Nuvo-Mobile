@@ -5,6 +5,7 @@
  */
 
 import type { StatsOverview, StatsDetail, StatsRow } from "@/ui/ports/stats";
+import { SAMPLE_MIXES } from "../demo/mixes";
 
 export interface StoredPlaylist {
   id: string;
@@ -375,6 +376,20 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
     return new Response(JSON.stringify(overview), { status: 200, headers: { "content-type": "application/json" } });
   }
 
+  // GET /v1/stats/collection
+  if (path.startsWith("/v1/stats/collection") && method === "GET") {
+    return new Response(JSON.stringify({ paused: false }), { status: 200, headers: { "content-type": "application/json" } });
+  }
+  // PUT /v1/stats/collection
+  if (path.startsWith("/v1/stats/collection") && method === "PUT") {
+    return new Response(JSON.stringify({ paused: body?.paused ?? false }), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
+  // POST /v1/stats/delete
+  if (path.startsWith("/v1/stats/delete") && method === "POST") {
+    return new Response(JSON.stringify({ events: 0 }), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
   // GET /v1/stats/:kind/:id
   if (path.startsWith("/v1/stats/")) {
     const detail: StatsDetail = {
@@ -409,7 +424,7 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
 
   // --- IMPORTS ---
   // POST /v1/imports or POST /v1/imports/start
-  if ((path === "/v1/imports" || path === "/v1/imports/start") && method === "POST") {
+  if ((path === "/v1/imports" || path.startsWith("/v1/imports?") || path === "/v1/imports/start" || path.startsWith("/v1/imports/start?")) && method === "POST") {
     const rows = Array.isArray(body?.rows) ? body.rows : [];
     const label = body?.label || "Импортированный плейлист";
     const playlists = loadJson<StoredPlaylist[]>(STORAGE_PLAYLISTS, []);
@@ -428,29 +443,43 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
       addedAt: new Date().toISOString(),
     }));
 
-    const newPlaylist: StoredPlaylist = {
-      id,
-      title: label,
-      description: `Импортировано из ${body?.source || "Spotify"} (${items.length} треков)`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      revision: 1,
-      coverUrl: null,
-      trackCount: items.length,
-      covers: [],
-      sortMode: "manual",
-      pinnedOffline: false,
-      items,
-    };
-    playlists.unshift(newPlaylist);
-    saveJson(STORAGE_PLAYLISTS, playlists);
+    const isLikedTarget = body?.target?.kind === "liked";
+    let targetId = id;
+
+    if (isLikedTarget) {
+      targetId = "likes";
+      const liked = loadJson<any[]>(STORAGE_LIKED, []);
+      for (const it of items) {
+        if (!liked.some((t) => t.id === it.track.id)) {
+          liked.unshift(it.track);
+        }
+      }
+      saveJson(STORAGE_LIKED, liked);
+    } else {
+      const newPlaylist: StoredPlaylist = {
+        id,
+        title: label,
+        description: `Импортировано из ${body?.source || "Spotify"} (${items.length} треков)`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        revision: 1,
+        coverUrl: null,
+        trackCount: items.length,
+        covers: [],
+        sortMode: "manual",
+        pinnedOffline: false,
+        items,
+      };
+      playlists.unshift(newPlaylist);
+      saveJson(STORAGE_PLAYLISTS, playlists);
+    }
 
     const summary = {
       id: "imp_" + Date.now().toString(36),
       sourceKind: body?.source || "spotify",
       label,
-      targetKind: (body?.target?.kind === "liked" ? "liked" : "playlist") as "liked" | "playlist",
-      targetId: id,
+      targetKind: (isLikedTarget ? "liked" : "playlist") as "liked" | "playlist",
+      targetId,
       createdAt: new Date().toISOString(),
       status: "done" as const,
       total: items.length,
@@ -589,6 +618,35 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
       return new Response(JSON.stringify(merged), { status: 200, headers: { "content-type": "application/json" } });
     }
     return new Response(JSON.stringify(current), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
+  // --- RECOMMENDATIONS / DAILY MIXES ---
+  if (path === "/v1/me/recommendations/daily-mixes" || path.startsWith("/v1/me/recommendations/")) {
+    return new Response(JSON.stringify({ items: SAMPLE_MIXES }), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
+  // --- SYSTEM NETWORK CHECK ---
+  if (path === "/v1/system/network-check") {
+    return new Response(JSON.stringify({ ok: true, tools: { yt_dlp: true, ffmpeg: true } }), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
+  // --- MATCH RANK ---
+  if (path === "/v1/match/rank") {
+    let ids: string[] = [];
+    if (Array.isArray(body?.songs)) {
+      ids = body.songs.map((s: { id: string }) => s.id);
+    }
+    return new Response(JSON.stringify({ ok: true, ids }), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
+  // --- SHORTCUTS ---
+  if (path === "/v1/shortcuts") {
+    return new Response(JSON.stringify([]), { status: 200, headers: { "content-type": "application/json" } });
+  }
+
+  // --- RECOGNIZE HISTORY ---
+  if (path === "/v1/recognize/history") {
+    return new Response(JSON.stringify({ items: [] }), { status: 200, headers: { "content-type": "application/json" } });
   }
 
   // --- SAVED COLLECTIONS / ALBUMS / ARTISTS ---

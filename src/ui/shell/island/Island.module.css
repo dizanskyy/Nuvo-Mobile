@@ -278,8 +278,14 @@
     display: none !important;
   }
   .centre {
+    position: relative !important;
+    inset: auto !important;
+    pointer-events: auto !important;
     display: flex !important;
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    margin-left: auto !important;
   }
   .transport {
     gap: 4px;

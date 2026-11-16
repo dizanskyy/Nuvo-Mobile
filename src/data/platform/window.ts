@@ -8,8 +8,12 @@ export interface WindowState {
   trafficLights: boolean;
 }
 
-// macOS draws the frame, corners and traffic lights itself
-export const nativeFrame = typeof navigator !== "undefined" && /Mac/.test(navigator.userAgent);
+// macOS draws the frame, corners and traffic lights itself; on mobile and web environments there is no desktop frame window controls
+export const nativeFrame =
+  typeof navigator !== "undefined" &&
+  (/Mac/i.test(navigator.userAgent) ||
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (typeof window !== "undefined" && !("nuvoShell" in window)));
 
 let winState: WinState = { maximized: false, fullscreen: false, visible: true };
 let appInfo: AppInfo | null = null;
