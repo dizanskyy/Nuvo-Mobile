@@ -82,9 +82,9 @@ function Figure({ value, label, delta }: { value: string; label: string; delta?:
 }
 
 function leadText(key: RangeKey, stats: StatsOverview, t: TFunction, locale: string): string {
-  if (key === "all") return t("ui.stats.lead_all", { date: stats.range.from ? formatDay(stats.range.from, locale, true) : "" });
+  if (key === "all") return t("ui.stats.lead_all", { date: stats?.range?.from ? formatDay(stats.range.from, locale, true) : "" });
   if (key === "custom")
-    return t("ui.stats.lead_custom", { from: formatDay(stats.range.from ?? "", locale, true), to: formatDay(stats.range.to, locale, true) });
+    return t("ui.stats.lead_custom", { from: formatDay(stats?.range?.from ?? "", locale, true), to: formatDay(stats?.range?.to ?? "", locale, true) });
   return t(`ui.stats.lead_${key}`);
 }
 
@@ -156,7 +156,7 @@ function Rhythm({ stats }: { stats: StatsOverview }): JSX.Element | null {
   const [hover, setHover] = useState<BarItem | null>(null);
   const items = useMemo(
     () =>
-      stats.range.from
+      stats?.range?.from
         ? buckets(stats.days, stats.range.from, stats.range.to, locale).map((bucket) => ({
             key: bucket.key,
             label: bucket.label,
@@ -165,7 +165,7 @@ function Rhythm({ stats }: { stats: StatsOverview }): JSX.Element | null {
             plays: bucket.plays,
           }))
         : [],
-    [stats.days, stats.range.from, stats.range.to, locale],
+    [stats.days, stats?.range?.from, stats?.range?.to, locale],
   );
   if (stats.days.length < MIN_CHART_DAYS || items.length === 0) return null;
   const shown = hover ?? items[peakIndex(items.map((item) => item.value))];
@@ -383,7 +383,7 @@ function Pages({ stats, range }: { stats: StatsOverview; range: RangeKey }): JSX
       </Enter>
       <Enter index={2} screen="stats">
         <Rhythm stats={stats} />
-        {showCalendar ? <Calendar days={stats.calendar} from={stats.range.from} to={stats.range.to} /> : null}
+        {showCalendar ? <Calendar days={stats.calendar} from={stats?.range?.from ?? ""} to={stats?.range?.to ?? ""} /> : null}
       </Enter>
       <Enter index={3} screen="stats">
         <When stats={stats} />
@@ -436,7 +436,7 @@ function CustomRange({
 function DeleteSheet({ target, stats, onClose }: { target: "range" | "all" | null; stats: StatsOverview | null; onClose: () => void }): JSX.Element {
   const { t, locale } = useTranslation();
   const [pending, setPending] = useState(false);
-  const days: StatsDays = target === "range" && stats?.range.from ? { from: stats.range.from, to: stats.range.to } : {};
+  const days: StatsDays = target === "range" && stats?.range?.from ? { from: stats.range.from, to: stats.range.to } : {};
   const confirm = async () => {
     if (pending) return;
     setPending(true);
@@ -450,7 +450,7 @@ function DeleteSheet({ target, stats, onClose }: { target: "range" | "all" | nul
       setPending(false);
     }
   };
-  const span = stats?.range.from ? `${formatDay(stats.range.from, locale, true)} – ${formatDay(stats.range.to, locale, true)}` : "";
+  const span = stats?.range?.from ? `${formatDay(stats.range.from, locale, true)} – ${formatDay(stats.range.to, locale, true)}` : "";
   return (
     <Sheet
       open={target !== null}

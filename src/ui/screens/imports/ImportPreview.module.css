@@ -214,9 +214,16 @@
   .head {
     gap: 10px;
     padding-right: 0;
+    max-width: 100% !important;
+    overflow: hidden !important;
   }
   .songs {
     max-height: 220px;
     overflow-y: auto;
+    overflow-x: hidden !important;
+  }
+  .song {
+    max-width: 100% !important;
+    overflow: hidden !important;
   }
 }

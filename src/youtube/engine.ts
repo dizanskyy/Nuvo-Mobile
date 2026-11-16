@@ -4,7 +4,7 @@ import type { Track } from "../engine/types";
 import type { Youtube } from "./index";
 import type { SearchItem, YtTrack } from "./types";
 import { SAMPLE_MIXES } from "../mobileBridge";
-import { getStreamForTrack, searchOnlineMusic } from "../data/catalog/openSearch";
+import { getStreamForTrack, resolveSoundCloudStream, resolveYouTubeStream, searchOnlineMusic } from "../data/catalog/openSearch";
 
 export function toEngineTrack(track: YtTrack): Track {
   const first = track.artists[0];
@@ -29,7 +29,7 @@ const tracksOnly = (items: SearchItem[]) => items.filter((item): item is Extract
 export function engineYoutube(youtube: Pick<Youtube, "playback">): YoutubePort {
   return {
     resolve: async (track, options, signal) => {
-      // 1. Direct stream resolver (iTunes AAC / Audius MP3 with Russian catalog support)
+      // 1. Direct stream resolver (YouTube Invidious, SoundCloud AAC/MP3, Audius)
       const stream = await getStreamForTrack(track.id, track.title, track.artists, signal);
       if (stream) {
         return {
@@ -37,11 +37,40 @@ export function engineYoutube(youtube: Pick<Youtube, "playback">): YoutubePort {
           mimeType: stream.mimeType,
           codec: stream.codec,
           bitrate: stream.bitrate,
-          servedBy: "opensearch",
+          servedBy: "stream-resolver",
         };
       }
 
-      // 2. Sample mix track audio
+      // 2. YouTube direct resolution if ID is YouTube format
+      const isYt = track.id.startsWith("yt:") || /^[A-Za-z0-9_-]{11}$/.test(track.id);
+      if (isYt) {
+        const ytStream = await resolveYouTubeStream(track.id.replace(/^yt:/, ""), signal);
+        if (ytStream) {
+          return {
+            url: ytStream.url,
+            mimeType: ytStream.mimeType,
+            codec: ytStream.codec,
+            bitrate: ytStream.bitrate,
+            servedBy: "youtube-mirror",
+          };
+        }
+      }
+
+      // 3. Fallback search on SoundCloud by track title + artist
+      if (track.title) {
+        const scStream = await resolveSoundCloudStream(track.title, track.artists, signal);
+        if (scStream) {
+          return {
+            url: scStream.url,
+            mimeType: scStream.mimeType,
+            codec: scStream.codec,
+            bitrate: scStream.bitrate,
+            servedBy: "soundcloud-stream",
+          };
+        }
+      }
+
+      // 4. Sample mix track audio
       for (const mix of SAMPLE_MIXES) {
         const found = mix.tracks.find((t) => t.id === track.id);
         if (found && (found as any).audioUrl) {
@@ -55,7 +84,7 @@ export function engineYoutube(youtube: Pick<Youtube, "playback">): YoutubePort {
         }
       }
 
-      // 3. YouTube playback or safe audio stream fallback
+      // 5. Native YouTube playback engine
       try {
         return await youtube.playback.resolve(
           track,

@@ -6,6 +6,7 @@
 
 import type { StatsOverview, StatsDetail, StatsRow } from "@/ui/ports/stats";
 import { SAMPLE_MIXES } from "../demo/mixes";
+import { getStreamForTrack, resolveSoundCloudStream } from "../catalog/openSearch";
 
 export interface StoredPlaylist {
   id: string;
@@ -302,8 +303,8 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
   }
 
   // --- STATS OVERVIEW ---
-  // GET /v1/stats/overview
-  if (path.startsWith("/v1/stats/overview")) {
+  // GET /v1/stats or /v1/stats/overview or /v1/me/stats
+  if (path === "/v1/stats" || path.startsWith("/v1/stats?") || path.startsWith("/v1/stats/overview") || path.startsWith("/v1/me/stats")) {
     const stats = loadJson(STORAGE_STATS, getStarterStats());
     const topTracks: StatsRow[] = stats.tracks || [];
     const topArtists: StatsRow[] = stats.artists || [];
@@ -312,11 +313,11 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
 
     const overview: StatsOverview = {
       range: {
-        from: new Date(Date.now() - 30 * 86400000).toISOString(),
-        to: new Date().toISOString(),
+        from: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10),
+        to: new Date().toISOString().slice(0, 10),
         days: 30,
-        previousFrom: new Date(Date.now() - 60 * 86400000).toISOString(),
-        previousTo: new Date(Date.now() - 30 * 86400000).toISOString(),
+        previousFrom: new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10),
+        previousTo: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10),
       },
       totals: {
         listenedMs: totalListened,
@@ -534,16 +535,19 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
   const scMatch = path.match(/^\/v1\/sc\/tracks\/([^/?]+)\/stream/);
   if (scMatch && method === "GET") {
     const rawId = decodeURIComponent(scMatch[1]);
-    const cleanId = rawId.replace(/^audius_/, "");
-    const streamUrl = cleanId && cleanId !== "fallback"
+    const cleanId = rawId.replace(/^audius_/, "").replace(/^sc:/, "");
+
+    const stream = await getStreamForTrack(`sc:${cleanId}`);
+    const streamUrl = stream?.url || (cleanId && cleanId !== "fallback"
       ? `https://discoveryprovider.audius.co/v1/tracks/${cleanId}/stream?app_name=NuvoMobile`
-      : "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=electronic-future-beats-117997.mp3";
+      : "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=electronic-future-beats-117997.mp3");
+
     return new Response(
       JSON.stringify({
         url: streamUrl,
-        mimeType: "audio/mpeg",
-        codec: "mp3",
-        bitrate: 192000,
+        mimeType: stream?.mimeType || "audio/mpeg",
+        codec: stream?.codec || "mp3",
+        bitrate: stream?.bitrate || 192000,
         expiresAt: null,
       }),
       { status: 200, headers: { "content-type": "application/json" } },
@@ -564,15 +568,22 @@ export async function handleLocalCoreRequest(urlStr: string, init?: RequestInit)
 
     if (q) {
       try {
-        const audiusRes = await fetch(`https://discoveryprovider.audius.co/v1/tracks/search?query=${encodeURIComponent(q)}&app_name=NuvoMobile`);
-        if (audiusRes.ok) {
-          const audiusData = await audiusRes.json();
-          const first = audiusData.data?.[0];
-          if (first && first.id) {
-            altId = `audius_${first.id}`;
-            altTitle = first.title;
-            altArtist = first.user?.name || altArtist;
-            altDurationMs = (first.duration || 180) * 1000;
+        const scStream = await resolveSoundCloudStream(title, artists);
+        if (scStream) {
+          altId = `sc_${Date.now().toString(36)}`;
+          altTitle = title;
+          altArtist = artists || altArtist;
+        } else {
+          const audiusRes = await fetch(`https://discoveryprovider.audius.co/v1/tracks/search?query=${encodeURIComponent(q)}&app_name=NuvoMobile`);
+          if (audiusRes.ok) {
+            const audiusData = await audiusRes.json();
+            const first = audiusData.data?.[0];
+            if (first && first.id) {
+              altId = `audius_${first.id}`;
+              altTitle = first.title;
+              altArtist = first.user?.name || altArtist;
+              altDurationMs = (first.duration || 180) * 1000;
+            }
           }
         }
       } catch {}

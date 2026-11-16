@@ -218,9 +218,9 @@
 
 @media (max-width: 768px) {
   .bar {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     height: 54px;
-    padding: 0 8px;
+    padding: 0 12px;
     gap: 8px;
   }
   .start > nav {
@@ -241,13 +241,7 @@
     width: 100%;
   }
   .end {
-    display: flex !important;
-    align-items: center;
-  }
-  .end .tray {
-    display: flex !important;
-    align-items: center;
-    padding: 0 2px;
+    display: none !important;
   }
   .rule,
   :global([data-window-controls]),

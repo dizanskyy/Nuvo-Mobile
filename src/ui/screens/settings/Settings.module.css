@@ -345,26 +345,33 @@
   .aside {
     width: 100% !important;
     flex: none !important;
-    max-height: 130px !important;
+    max-height: 125px !important;
     border-bottom: 1px solid var(--n-hair);
+    padding: 4px 0 !important;
+    overflow: hidden !important;
   }
   .searchWrap {
-    margin: 10px 10px 4px !important;
+    margin: 6px 12px 6px !important;
   }
   .nav {
     display: flex !important;
     flex-direction: row !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
-    padding: 4px 8px !important;
-    gap: 4px !important;
+    padding: 2px 12px 8px !important;
+    gap: 8px !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    align-items: center !important;
+  }
+  .nav::-webkit-scrollbar {
+    display: none;
   }
   .group {
     display: flex !important;
     flex-direction: row !important;
-    gap: 4px !important;
+    flex-shrink: 0 !important;
+    gap: 8px !important;
   }
   .groupLabel {
     display: none !important;
@@ -372,17 +379,34 @@
   .groupItems {
     display: flex !important;
     flex-direction: row !important;
-    gap: 4px !important;
+    flex-shrink: 0 !important;
+    gap: 8px !important;
   }
   .item {
-    padding: 6px 10px !important;
-    flex-shrink: 0 !important;
+    width: auto !important;
+    min-width: max-content !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    padding: 6px 14px !important;
+    border-radius: 9999px !important;
+    background: color-mix(in srgb, var(--n-ink) 6%, transparent) !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .item[aria-selected="true"] {
+    background: var(--n-ink) !important;
+    color: var(--n-base) !important;
+  }
+  .item[aria-selected="true"] svg {
+    color: var(--n-base) !important;
   }
   .main {
     flex: 1 1 0 !important;
     min-height: 0 !important;
   }
   .body {
-    padding: 16px !important;
+    padding: 16px 16px 80px !important;
   }
 }

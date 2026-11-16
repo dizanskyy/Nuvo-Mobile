@@ -79,14 +79,14 @@ const CELL_LEVELS = [0, 1, 2, 3, 4] as const;
 export function Calendar({ days, from, to }: { days: readonly StatsDay[]; from: string | null; to: string }): JSX.Element {
   const { t, locale } = useTranslation();
   const [hover, setHover] = useState<CalendarCell | null>(null);
-  const weeks = calendarWeeks(days, to, from, locale);
+  const weeks = calendarWeeks(days ?? [], to, from, locale);
   const names = weekdays(locale);
   const months = weeks.map((week, index) =>
-    index > 0 && week[0].day.slice(0, 7) !== weeks[index - 1][0].day.slice(0, 7)
+    index > 0 && week[0]?.day?.slice(0, 7) !== weeks[index - 1]?.[0]?.day?.slice(0, 7)
       ? new Date(`${week[0].day}T12:00:00`).toLocaleDateString(locale, { month: "short" })
       : null,
   );
-  const total = days.filter((day) => day.plays > 0).length;
+  const total = (days ?? []).filter((day) => day && day.plays > 0).length;
   return (
     <Section
       id="calendar"

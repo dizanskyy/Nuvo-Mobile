@@ -269,10 +269,11 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
   .now {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 0;
-    gap: 10px;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    gap: 10px !important;
+    overflow: hidden !important;
   }
   .rate {
     display: none !important;
@@ -286,6 +287,7 @@
     align-items: center !important;
     justify-content: flex-end !important;
     margin-left: auto !important;
+    z-index: 2 !important;
   }
   .transport {
     gap: 4px;
